@@ -42,7 +42,7 @@ const Login = () => {
 
     return (
         <>
-            <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-8 text-gray-800">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-center mb-8 text-gray-800">
                 Bienvenido a{" "}
                 <span className="text-indigo-700">AndarUCI</span>
             </h1>
@@ -101,7 +101,7 @@ const Login = () => {
                 className="block text-center text-slate-500 uppercase text-sm mt-5"
                 to="/contacto"
             >
-                ¿Necesita ayuda? Contáctenos.
+                ¿Necesita ayuda? Contáctenos
             </Link>
         </>
     );

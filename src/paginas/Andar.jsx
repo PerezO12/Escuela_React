@@ -4,6 +4,7 @@ import clienteAxios from '../config/clienteAxios'
 import Formulario from '../components/Formulario'
 import Alerta from '../components/Alerta';
 import useAuth from '../hooks/useAuth';
+import useQuery from '../hooks/useQuery';
 
 const Andar = () => {
   const { cargando } = useAuth();
@@ -12,23 +13,29 @@ const Andar = () => {
   const [ formularioId, setFormularioId ] = useState('');
   const [ formularios, setFormularios ] = useState([]);
   const [ alerta, setAlerta ] = useState({});
-  
+  const { query } = useQuery(); 
+
+  const [ texto, setTexto ] = useState("No se han encontrado formularios.");
+
+  console.log("Desde el andar: ",`/Formulario/estudiantes${query}`);
+  console.log("solo: ", query )
+  const cargarDatos = async (query = '') =>{
+    try{
+      const { data } = await clienteAxios.get(`/Formulario/estudiantes${query}`);
+      setFormularios(data.$values);
+      setAlerta({})
+    } catch(error) {
+      console.log(error);
+      setAlerta({
+        msg: "En este momento no se pueden cargar los formularios",
+        error: true
+      })
+    }
+  };
 
   useEffect( () =>{
-    const cargarDatos = async () =>{
-      try{
-        const { data } = await clienteAxios.get('/Formulario/estudiantes');
-        setFormularios(data.$values);
-      } catch(error) {
-        console.log(error.response);
-        setAlerta({
-          msg: "En este momento no se pueden cargar los formularios",
-          error: true
-        })
-      }
-    };
-    cargarDatos();
-  }, [])
+    cargarDatos(query);
+  }, [query])
 
   if (cargando) {
     return <div>Cargando...</div>;
@@ -36,22 +43,23 @@ const Andar = () => {
   const { msg } = alerta
   return (
     <>
-      <h1 className='text-6xl text-center font-extrabold text-gray-800 shadow-md p-6 rounded-lg bg-zinc-50'>
-        Actualmente no tienes formularios creados
-      </h1>
+      {(formularios.length == 0 && !msg) && (
+        <h1 className='text-6xl text-center font-extrabold text-gray-800 shadow-md p-6 rounded-lg bg-zinc-50'>
+          {texto}
+        </h1>
+      )}
 
       { msg && <Alerta alerta={alerta} />}
-
-      <div className='lg:grid grid-cols-1 sm:grid-cols-2 lg:gap-4'>
-        {formularios.map( ( formulario ) => {
-          return (
+      
+      <div className='lg:grid grid-cols-1 sm:grid-cols-2 lg:gap-4
+      '>
+        {formularios.map( ( formulario ) => (
             <Formulario 
               key = {formulario.id}
-              formulario={ formulario } />
-            
-            )
-        })}
-        
+              formulario={ formulario }
+              cargarDatos={cargarDatos} 
+            />
+          ))}
       </div>
     </>
   )

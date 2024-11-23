@@ -18,7 +18,7 @@ const Sidebar = () => {
 
       <Link
         to=""
-        className="w-full flex items-center justify-center bg-sky-500 hover:bg-sky-600
+        className="w-full flex items-center justify-center bg-sky-600 hover:bg-sky-700
                  text-white font-semibold py-3 px-5 mb-4 rounded-full shadow-lg transition duration-300 
                  transform hover:scale-105"
       >
@@ -28,7 +28,7 @@ const Sidebar = () => {
 
       <Link
         to="crear-formulario"
-        className="w-full flex items-center justify-center bg-green-500 hover:bg-green-600
+        className="w-full flex items-center justify-center bg-sky-600 hover:bg-sky-700
                  text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-300 
                  transform hover:scale-105"
       >
