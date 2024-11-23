@@ -44,7 +44,7 @@ const Andar = () => {
   return (
     <>
       {(formularios.length == 0 && !msg) && (
-        <h1 className='text-6xl text-center font-extrabold text-gray-800 shadow-md p-6 rounded-lg bg-zinc-50'>
+        <h1 className='lg:text-6xl text-3xl text-center font-extrabold text-gray-800 shadow-md p-6 rounded-lg bg-zinc-50'>
           {texto}
         </h1>
       )}

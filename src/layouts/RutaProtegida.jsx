@@ -32,7 +32,7 @@ const RutaProtegida = () => {
 
                 <div className="md:flex relative">
                   <CiMenuBurger 
-                    className="absolute top-4 left-2 z-10 text-4xl text-zinc-800 hover:text-zinc-900 cursor-pointer transition-transform transform hover:scale-110"
+                    className=" absolute top-4 left-2 z-10 lg:text-4xl text-2xl text-zinc-800 hover:text-zinc-900 cursor-pointer transition-transform transform hover:scale-110"
                     onClick={e => setMostrarSidebar(!mostrarSidebar)}
                   />
                   {mostrarSidebar && 
@@ -40,7 +40,7 @@ const RutaProtegida = () => {
                     <Sidebar />
                   </div>)}
 
-                  <main className="p-10 flex-1 lg:overflow-auto lg:h-[calc(100vh-80px)]">
+                  <main className="lg:p-10 lg:px-20 flex-1 lg:overflow-auto lg:h-[calc(100vh-80px)]">
                     <Outlet/>
                   </main>
                 </div>

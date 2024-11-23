@@ -18,7 +18,7 @@ const BarraBusqueda = ( ) => {
     <div className="flex items-stretch w-full lg:max-w-3xl max-w-md mx-auto rounded-full overflow-hidden">
       {/* Selector de tipo de búsqueda */}
       <select 
-        className="p-2 w-28 bg-gray-100 border-none focus:outline-none focus:ring-2 hover:ring-zinc-400 transition duration-200 shadow-md text-gray-900 cursor-pointer rounded-l-full "
+        className="p-2 lg:w-28 w-12 bg-gray-100 border-none focus:outline-none focus:ring-2 hover:ring-zinc-400 transition duration-200 shadow-md text-gray-900 cursor-pointer rounded-l-full "
         value={buscarPor}
         onChange={e => setBuscarPor(e.target.value)}
       >
