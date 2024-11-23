@@ -29,7 +29,7 @@ const Login = () => {
             setAlerta({});
             localStorage.setItem('token', data.token);
             setAuth(data);
-            navigate('andar');
+            navigate(data.rol.toLowerCase());
         } catch (error) {
             setAlerta({
                 msg: error.response?.data || "Ocurrió un error al iniciar sesión. Por favor, inténtelo nuevamente.",

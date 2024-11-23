@@ -3,8 +3,9 @@ import { useState,useRef, useEffect } from "react";
 import clienteAxios from "../config/clienteAxios";
 import Alerta from "./Alerta";
 import useAuth from "../hooks/useAuth";
+import formatearFecha from "../helpers/convertirFechas";
 
-const Formulario = ( { formulario, cargarDatos }) => {
+const FormularioEstudiante = ( { formulario, cargarDatos }) => {
 const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, fechacreacion } = formulario;
 
 
@@ -51,7 +52,7 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
     }
 
     return(
-        <div className="mx-2 my-2 bg-white shadow-md px-5 py-5 rounded-xl w-full">
+        <div className="mx-auto md:mx-12 lg:my-2 md:my-2 bg-white shadow-md px-5 py-5 rounded-xl w-auto">
 
                 <p className="font-bold mb-3 text-gray-700 uppercase">Nombre del Encargado: {""}
                     <span className="font-normal normal-case">{ nombreEncargado }</span>
@@ -64,12 +65,12 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
                 </p>
                 {fechafirmado && (
                 <p className="font-bold mb-3 text-gray-700 uppercase">Fecha Firmado: {""}
-                    <span className="font-normal normal-case">{ formatDate(fechafirmado) }</span>
+                    <span className="font-normal normal-case">{ formatearFecha(fechafirmado) }</span>
                 </p>
                 )}
                 
                 <p className="font-bold mb-3 text-gray-700 uppercase">Fecha Creado: {""}
-                    <span className="font-normal normal-case">{ formatDate(fechacreacion) }</span>
+                    <span className="font-normal normal-case">{ formatearFecha(fechacreacion) }</span>
                 </p>
                 {isEditing
                 ?    (<>
@@ -147,24 +148,8 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
     )
 }
 
-export default Formulario
+export default FormularioEstudiante
 
 
 
 
-function formatDate(date) {
-    const fecha = new Date(date);
-
-    if (isNaN(fecha)) {
-        return "Fecha inválida";
-    }
-
-    const formattedDate = fecha.toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    });
-
-    // Retornar la fecha y hora formateadas
-    return ` ${formattedDate} `;
-}

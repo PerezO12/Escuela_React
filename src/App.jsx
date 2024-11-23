@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useEffect, useState } from "react";
+
 
 import AuthLayout from './layouts/AuthLayout';
 import Login from './paginas/Login';
 import { AuthProvider } from './context/AuthProvider';
 import RutaProtegida from './layouts/RutaProtegida';
-import Andar from './paginas/Andar';
+import AndarEstudiantes from './paginas/AndarEstudiantes';
 import CrearFormulario from './paginas/CrearFormulario';
+import AndarEncargados from './paginas/AndarEncargados';
+import FormularioFirmar from './components/FormularioFirmar';
 
 
 function App() {
@@ -22,11 +24,16 @@ function App() {
 
           </Route>
         
-          <Route path='/andar' element={ <RutaProtegida />}>
-            <Route index element={<Andar />}/>
+          <Route path='/estudiante' element={ <RutaProtegida />}>
+            <Route index element={<AndarEstudiantes />}/>
             <Route path='crear-formulario' element={<CrearFormulario />} />
           </Route>
-          
+          {"Rutas para encargados"}
+          <Route path='/encargado' element={ <RutaProtegida />}>
+            <Route index element={<AndarEncargados />}/>
+            <Route path='formulario/:id' element={<FormularioFirmar />}/>
+          </Route>
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>

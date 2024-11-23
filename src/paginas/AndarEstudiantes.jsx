@@ -1,12 +1,12 @@
 import{ useState, useEffect } from 'react'
 
 import clienteAxios from '../config/clienteAxios'
-import Formulario from '../components/Formulario'
+import FormularioEstudiante from '../components/FormularioEstudiante'
 import Alerta from '../components/Alerta';
 import useAuth from '../hooks/useAuth';
 import useQuery from '../hooks/useQuery';
 
-const Andar = () => {
+const AndarEstudiantes = () => {
   const { cargando } = useAuth();
   if(cargando)  return;
   
@@ -15,10 +15,7 @@ const Andar = () => {
   const [ alerta, setAlerta ] = useState({});
   const { query } = useQuery(); 
 
-  const [ texto, setTexto ] = useState("No se han encontrado formularios.");
 
-  console.log("Desde el andar: ",`/Formulario/estudiantes${query}`);
-  console.log("solo: ", query )
   const cargarDatos = async (query = '') =>{
     try{
       const { data } = await clienteAxios.get(`/Formulario/estudiantes${query}`);
@@ -45,7 +42,7 @@ const Andar = () => {
     <>
       {(formularios.length == 0 && !msg) && (
         <h1 className='lg:text-6xl text-3xl text-center font-extrabold text-gray-800 shadow-md p-6 rounded-lg bg-zinc-50'>
-          {texto}
+          No se han encontrado formularios.
         </h1>
       )}
 
@@ -54,7 +51,7 @@ const Andar = () => {
       <div className='lg:grid grid-cols-1 sm:grid-cols-2 lg:gap-4
       '>
         {formularios.map( ( formulario ) => (
-            <Formulario 
+            <FormularioEstudiante 
               key = {formulario.id}
               formulario={ formulario }
               cargarDatos={cargarDatos} 
@@ -65,4 +62,4 @@ const Andar = () => {
   )
 }
 
-export default Andar
+export default AndarEstudiantes

@@ -30,8 +30,10 @@ const AuthProvider = ({children}) => {
             try {
                  
                 const { data } = await clienteAxios.get('/account/obtener-perfil', config);
+                data.rol = data.rol.toLowerCase();
                 setAuth(data);
-                navigate('andar');
+                //Redirecciones
+                navigate(data.rol);
 
             } catch(error) {
                 setAuth({});
