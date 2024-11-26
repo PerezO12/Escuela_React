@@ -1,5 +1,5 @@
 import { Outlet, Navigate } from "react-router-dom"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiMenuBurger } from "react-icons/ci";
 
 import useAuth from "../hooks/useAuth"

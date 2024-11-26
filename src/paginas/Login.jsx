@@ -28,6 +28,7 @@ const Login = () => {
             const { data } = await clienteAxios.post(url, { nombre, password });
             setAlerta({});
             localStorage.setItem('token', data.token);
+            data.rol = data.rol.toLowerCase();
             setAuth(data);
             navigate(data.rol.toLowerCase());
         } catch (error) {
@@ -67,6 +68,7 @@ const Login = () => {
                         className="mt-3 p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-50 focus:bg-white shadow-inner focus:shadow-lg transition duration-300"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
+                        required
                     />
                 </div>
     
@@ -84,6 +86,7 @@ const Login = () => {
                         className="mt-3 p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-50 focus:bg-white shadow-inner focus:shadow-lg transition duration-300"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
                     />
                 </div>
     

@@ -15,10 +15,9 @@ const AndarEstudiantes = () => {
   const [ alerta, setAlerta ] = useState({});
   const { query } = useQuery(); 
 
-
   const cargarDatos = async (query = '') =>{
     try{
-      const { data } = await clienteAxios.get(`/Formulario/estudiantes${query}`);
+      const { data } = await clienteAxios.get(`/Formulario/estudiantes?${query}`);
       setFormularios(data.$values);
       setAlerta({})
     } catch(error) {

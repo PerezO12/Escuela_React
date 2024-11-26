@@ -8,7 +8,7 @@ import RutaProtegida from './layouts/RutaProtegida';
 import AndarEstudiantes from './paginas/AndarEstudiantes';
 import CrearFormulario from './paginas/CrearFormulario';
 import AndarEncargados from './paginas/AndarEncargados';
-import FormularioFirmar from './components/FormularioFirmar';
+
 
 
 function App() {
@@ -30,8 +30,8 @@ function App() {
           </Route>
           {"Rutas para encargados"}
           <Route path='/encargado' element={ <RutaProtegida />}>
-            <Route index element={<AndarEncargados />}/>
-            <Route path='formulario/:id' element={<FormularioFirmar />}/>
+            <Route index element={<AndarEncargados firmados={false}/>}/>
+            <Route path='historial' element={<AndarEncargados firmados={true}/>} />
           </Route>
 
         </Routes>

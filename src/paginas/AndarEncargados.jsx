@@ -3,22 +3,23 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 import clienteAxios from "../config/clienteAxios";
 import useAuth from "../hooks/useAuth";
+import useQuery from "../hooks/useQuery";
 import FormularioEncargado from "../components/FormularioEncargado";
 
 
-const AndarEncargados = () => {
+const AndarEncargados = ({firmados=false}) => {
     const [ formularios, setFormularios ] = useState([]);
     const [ pagina, setPagina ] = useState(1);
     const [ ordenar, setOrdenar ] = useState("Fecha")
     const [ descender, setDescender ] = useState(false);
     const [ flechaActiva, setFlechaActiva ] = useState(true);
-    const { cargando } = useAuth();
-
-    if(cargando)  return;
-    const query = `?OrdenarPor=${ordenar}&NumeroPagina=${pagina}&Descender=${descender}`;
-    const cargarDatos = async (query="") => {
+    //const { cargando } = useAuth();
+    const { query } = useQuery();
+    //if(cargando)  return;
+    const queryCompleto = `?${query}OrdenarPor=${ordenar}&NumeroPagina=${pagina}&Descender=${descender}&Firmados=${firmados}`;
+    const cargarDatos = async (queryCompleto="") => {
         try{
-            const { data } = await clienteAxios.get(`/Formulario/encargados${query}`);
+            const { data } = await clienteAxios.get(`/Formulario/encargados${queryCompleto}`);
             if(data.$values.length == 0) {
                 handleCambiarPagina(-1);
                 setFlechaActiva(false);
@@ -32,8 +33,8 @@ const AndarEncargados = () => {
     }
 
     useEffect(() => {
-        cargarDatos(query);
-    }, [query])
+        cargarDatos(queryCompleto);
+    }, [queryCompleto])
 
     const handleCambiarPagina = ( a ) => {
         if(pagina + a <= 0) {

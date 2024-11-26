@@ -1,10 +1,11 @@
-import React from 'react';
+
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 const Sidebar = () => {
   const { auth } = useAuth();
-  const rol = auth.rol;
+  const rol = auth?.rol;
+
   return (
     <aside className="lg:w-72 bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300 shadow-xl p-8 rounded-2xl flex flex-col items-center">
       <div className="w-full flex flex-col items-center mb-10">
@@ -26,14 +27,26 @@ const Sidebar = () => {
       </Link>
 
 
-      { rol == "estudiante"&&
+      { rol == "estudiante"
+      &&
         (<Link
           to="crear-formulario"
           className="w-full flex items-center justify-center bg-sky-600 hover:bg-sky-700
                   text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-300 
-                  transform hover:scale-105 mb-4"
+                  transform hover:scale-105 mb-4 "
         >
           Nuevo Formulario
+        </Link>
+      )}
+      { rol == "encargado"
+      &&
+        (<Link
+          to="historial"
+          className="w-full flex items-center justify-center bg-sky-600 hover:bg-sky-700
+                  text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-300 
+                  transform hover:scale-105 mb-4 "
+        >
+          Historial
         </Link>
       )}
     </aside>

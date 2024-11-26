@@ -7,7 +7,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({children}) => {
 
-    const [ auth, setAuth ] = useState({});
+    const [ auth, setAuth ] = useState(null);
     const [ cargando, setCargando ] = useState(true);
 
     const navigate = useNavigate();
