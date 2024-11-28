@@ -31,9 +31,9 @@ const Login = () => {
             data.rol = data.rol.toLowerCase();
             setAuth(data);
             navigate(data.rol.toLowerCase());
-        } catch (error) {
+        } catch (error) {;
             setAlerta({
-                msg: error.response?.data || "Ocurrió un error al iniciar sesión. Por favor, inténtelo nuevamente.",
+                msg: error.response?.data.msg || "Ocurrió un error al iniciar sesión. Por favor, inténtelo nuevamente.",
                 error: true
             });
         }

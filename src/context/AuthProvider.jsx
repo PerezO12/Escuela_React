@@ -33,8 +33,9 @@ const AuthProvider = ({children}) => {
                 data.rol = data.rol.toLowerCase();
                 setAuth(data);
                 //Redirecciones
-                navigate(data.rol);
-
+                if(data.rol == 'admin') navigate('admin');
+                if(data.rol == 'encargado') navigate('encargado');
+                if(data.rol == 'estudiante') navigate('estudiante');
             } catch(error) {
                 setAuth({});
                 console.log(error);

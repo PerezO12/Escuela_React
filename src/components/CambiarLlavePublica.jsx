@@ -141,7 +141,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
 
           <p className={`mt-4 text-center text-sm ${mensaje.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
               {mensaje}
-            </p>
+          </p>
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-4 rounded-full shadow-md hover:opacity-90 transition duration-300"

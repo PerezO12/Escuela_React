@@ -5,6 +5,7 @@ import clienteAxios from "../config/clienteAxios";
 import useAuth from "../hooks/useAuth";
 import useQuery from "../hooks/useQuery";
 import FormularioEncargado from "../components/FormularioEncargado";
+import BarraCambiarPagina from "./BarraCambiarPagina";
 
 
 const AndarEncargados = ({firmados=false}) => {
@@ -36,17 +37,18 @@ const AndarEncargados = ({firmados=false}) => {
         cargarDatos(queryCompleto);
     }, [queryCompleto])
 
-    const handleCambiarPagina = ( a ) => {
-        if(pagina + a <= 0) {
-            return;
-        }
-        setPagina(pagina + a);
-    }
+
     const handleOrdenarPor = (ordenarPor) => {
         if(ordenar == ordenarPor){
             setDescender(!descender);
         }
         setOrdenar(ordenarPor);
+    }
+    const handleCambiarPagina = ( a ) => {
+        if(pagina + a <= 0) {
+            return;
+        }
+        setPagina(pagina + a);
     }
 
     return (
@@ -79,23 +81,7 @@ const AndarEncargados = ({firmados=false}) => {
 
             </div>
 
-            <div className="flex items-center px-6 lg:py-2 py-1 bg-gray-50 shadow-lg rounded-3xl border">
-                <div className="flex-grow flex justify-start">
-                    <FaArrowLeft 
-                        className="lg:text-4xl text-gray-700 hover:text-blue-600 cursor-pointer transition-transform transform hover:scale-125" 
-                        onClick={() => handleCambiarPagina(-1)}
-                    />
-                </div>
-                <p className="lg:text-3xl text-xl">{pagina}</p>
-                <div className="flex-grow flex justify-end">
-                    {flechaActiva && (
-                        <FaArrowRight 
-                            className="lg:text-4xl text-gray-700 hover:text-blue-600 cursor-pointer transition-transform transform hover:scale-125" 
-                            onClick={() => handleCambiarPagina(1)}
-                        />
-                    )}
-                </div>
-            </div>
+            <BarraCambiarPagina handleCambiarPagina={handleCambiarPagina} flechaActiva={flechaActiva} pagina={pagina} />
         </div>
     )
 }

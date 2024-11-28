@@ -8,6 +8,11 @@ import RutaProtegida from './layouts/RutaProtegida';
 import AndarEstudiantes from './paginas/AndarEstudiantes';
 import CrearFormulario from './paginas/CrearFormulario';
 import AndarEncargados from './paginas/AndarEncargados';
+import AdministrarCarreras from './paginas/AdministrarCarreras';
+import AdministrarDepartamentos from './paginas/AdministrarDepartamentos';
+import AdministrarFacultades from './paginas/AdministrarFacultades';
+import AdministrarFormularios from './paginas/AdministrarFormularios';
+import AdministrarUsuarios from './paginas/AdministrarUsuarios';
 
 
 
@@ -28,10 +33,21 @@ function App() {
             <Route index element={<AndarEstudiantes />}/>
             <Route path='crear-formulario' element={<CrearFormulario />} />
           </Route>
+
           {"Rutas para encargados"}
           <Route path='/encargado' element={ <RutaProtegida />}>
             <Route index element={<AndarEncargados firmados={false}/>}/>
             <Route path='historial' element={<AndarEncargados firmados={true}/>} />
+          </Route>
+
+          {"Rutas para Administrador"}
+          
+          <Route path='/admin' element={ <RutaProtegida />}>
+            <Route index element={<AdministrarUsuarios />} />
+            <Route path='departamentos' element={<AdministrarDepartamentos />} />
+            <Route path='facultades' element={<AdministrarFacultades />} />
+            <Route path='formularios' element={<AdministrarFormularios />} />
+            <Route path='carreras' element={<AdministrarCarreras />} />
           </Route>
 
         </Routes>

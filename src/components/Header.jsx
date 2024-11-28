@@ -28,7 +28,7 @@ const Header = () => {
   }, [menuVisible]);  // Se ejecuta cuando `menuVisible` cambia
   
   return (
-    <header className="px-6 py-3 bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 text-white shadow-lg relative">
+    <header className="px-6 py-3 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 text-white shadow-lg relative">
       <div className="lg:flex sm:flex-row lg:justify-between lg:items-center justify-center ">
         
         <h2 className="text-3xl text-center mb-2  font-extrabold tracking-wide text-blue-700 md:text-center lg:text-left">

@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import clienteAxios from "../config/clienteAxios";
 import { QueryProvider } from "../context/QueryProvider";
+import SidebarAdmin from "../components/SidebarAdmin";
 
 const RutaProtegida = () => {
 
@@ -33,10 +34,13 @@ const RutaProtegida = () => {
                   />
                   {mostrarSidebar && 
                   (<div className="md:flex relative z-0">
-                    <Sidebar />
+                    {auth.rol != 'admin'?
+                      (<Sidebar />)
+                    : (<SidebarAdmin />) //todo:mejorar esto
+                    }
                   </div>)}
 
-                  <main className="lg:p-10 lg:px-20 flex-1 lg:overflow-auto lg:h-[calc(100vh-80px)] md:h-[calc(100vh-60px)]">
+                  <main className="lg:p-10  flex-1 lg:overflow-auto lg:h-[calc(100vh-80px)] md:h-[calc(100vh-60px)]">
                     <Outlet/>
                   </main>
                 </div>

@@ -27,7 +27,7 @@ const Menu = () => {
         setMostrarMenu(false);
     }
     const handleCloseModal = () => {
-        setCambiarPassword(setCambiarPassword(false));
+        setCambiarPassword(false);
     }
     return (
         <>
