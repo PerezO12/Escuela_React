@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import clienteAxios from '../config/clienteAxios';
+import clienteAxios from '../../config/clienteAxios';
 
 const FormularioFirmar = ({ handleCloseModal, id }) => {
   const [formulario, setFormulario] = useState({});

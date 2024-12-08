@@ -2,7 +2,7 @@
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import formatearFecha from "../helpers/convertirFechas";
+import formatearFecha from "../../helpers/convertirFechas";
 import FormularioFirmar from "./FormularioFirmar";
 const FormularioEncargado = ( {formulario} ) => {
     const {

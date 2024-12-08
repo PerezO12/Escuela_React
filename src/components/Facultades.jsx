@@ -2,7 +2,7 @@ import { useState, useEffect} from 'react'
 import formatearFecha from '../helpers/convertirFechas';
 
 import clienteAxios from '../config/clienteAxios';
-import CrearEditarFacultad from './CrearEditarFacultad';
+import CrearEditarUsuario from './Admin/CrearEditarUsuario';
 
 const Facultades = ({facultad, EditarFacultad, mensaje}) => {
   const { id, nombre, fechaCreacion } = facultad;
@@ -13,9 +13,9 @@ const Facultades = ({facultad, EditarFacultad, mensaje}) => {
   };
 
   return (
-    <>
+    <div>
       {mostrarEditar && (
-        <CrearEditarFacultad 
+        <CrearEditarUsuario 
           handleCloseModal={handleCloseModal} 
           crearEditarFacultad={EditarFacultad} 
           editar={true}
@@ -30,14 +30,14 @@ const Facultades = ({facultad, EditarFacultad, mensaje}) => {
             onClick={e => setMostrarEditar(true)}
         >
           <div 
-            className="grid grid-cols-2 lg:gap-96 hover:cursor-pointer"  
+            className="grid grid-cols-2 lg:gap-96 hover:cursor-pointer "  
           >
               <p className="hover:text-blue-700 lg:text-base text-sm transition-colors capitalize truncate">{nombre}</p>
               <p className="text-blue-900 hover:text-blue-800 lg:text-base text-sm transition-colors truncate">{formatearFecha(fechaCreacion)}</p>
           </div>
       </div>
 
-    </>
+    </div>
   )
 }
 

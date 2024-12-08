@@ -1,9 +1,7 @@
 import { useState,useRef, useEffect } from "react";
 
-import clienteAxios from "../config/clienteAxios";
-import Alerta from "./Alerta";
-import useAuth from "../hooks/useAuth";
-import formatearFecha from "../helpers/convertirFechas";
+import clienteAxios from "../../config/clienteAxios";
+import formatearFecha from "../../helpers/convertirFechas";
 
 const FormularioEstudiante = ( { formulario, cargarDatos }) => {
 const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, fechacreacion } = formulario;

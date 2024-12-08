@@ -1,20 +1,22 @@
 import{ useState, useEffect } from 'react'
-
+import { Navigate, useNavigate } from 'react-router-dom';
 import clienteAxios from '../config/clienteAxios'
-import FormularioEstudiante from '../components/FormularioEstudiante'
+import FormularioEstudiante from '../components/Estudiante/FormularioEstudiante';
 import Alerta from '../components/Alerta';
 import useAuth from '../hooks/useAuth';
 import useQuery from '../hooks/useQuery';
 
 const AndarEstudiantes = () => {
-  const { cargando } = useAuth();
-  if(cargando)  return;
-  
   const [ formularioId, setFormularioId ] = useState('');
   const [ formularios, setFormularios ] = useState([]);
   const [ alerta, setAlerta ] = useState({});
+  const { cargando, rol } = useAuth();
   const { query } = useQuery(); 
-
+  const navigate = useNavigate();
+  if(cargando)  return;
+  
+  if(rol != "estudiante") navigate('/'); 
+  
   const cargarDatos = async (query = '') =>{
     try{
       const { data } = await clienteAxios.get(`/Formulario/estudiantes?${query}`);

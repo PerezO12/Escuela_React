@@ -7,7 +7,7 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import clienteAxios from "../config/clienteAxios";
 import { QueryProvider } from "../context/QueryProvider";
-import SidebarAdmin from "../components/SidebarAdmin";
+import SidebarAdmin from "../components/Admin/SidebarAdmin";
 
 const RutaProtegida = () => {
 
@@ -40,7 +40,7 @@ const RutaProtegida = () => {
                     }
                   </div>)}
 
-                  <main className="lg:p-10  flex-1 lg:overflow-auto lg:h-[calc(100vh-80px)] md:h-[calc(100vh-60px)]">
+                  <main className="lg:p-7 md:p-3 flex-1 lg:overflow-auto lg:h-[calc(101vh-80px)] h-[calc(101vh-60px)]">
                     <Outlet/>
                   </main>
                 </div>

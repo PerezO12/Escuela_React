@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import CambiarPassword from "../components/CambiarPassword";
-import GestionarLlaves from './GestionarLlave';
+import CambiarPassword from './Encargado/CambiarPassword';
+import GestionarLlaves from './Encargado/GestionarLlaves';
 
 const Menu = () => {
     

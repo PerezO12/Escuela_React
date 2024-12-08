@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FiUpload, FiKey, FiLock } from 'react-icons/fi';
-import clienteAxios from '../config/clienteAxios';
+import clienteAxios from '../../config/clienteAxios';
 
 const CambiarLlavePublica = ({ closeModal }) => {
   const [password, setPassword] = useState('');

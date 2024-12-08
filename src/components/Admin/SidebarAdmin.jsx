@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 
 const SidebarAdmin = () => {
   const { auth } = useAuth();
@@ -8,7 +8,7 @@ const SidebarAdmin = () => {
   if(rol != 'admin') return
 
   return (
-    <aside className="lg:w-72 bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300 shadow-xl p-8 rounded-2xl flex flex-col items-center">
+    <aside className="lg:w-64 md:w-64 bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300 shadow-xl p-8 lg:py-10 rounded-2xl flex flex-col items-center">
         <div className="w-full flex flex-col items-center mb-10">
             <p className="text-2xl font-semibold text-gray-800 text-center capitalize">
                 Hola, {auth.nombreCompleto}

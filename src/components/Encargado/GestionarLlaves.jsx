@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CambiarLlavePublica from '../components/CambiarLlavePublica';
+import CambiarLlavePublica from './CambiarLlavePublica';
 import GenerarNuevoParLlaves from './GenerarNuevoParLlaves';
 
 const GestionarLlaves = () => {

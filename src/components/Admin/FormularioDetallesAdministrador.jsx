@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import clienteAxios from '../config/clienteAxios';
-import formatearFecha from '../helpers/convertirFechas';
+import clienteAxios from '../../config/clienteAxios';
+import formatearFecha from '../../helpers/convertirFechas';
 
 const FormularioDetallesAdministrador = ({handleCloseModal, id}) => {
     const [formulario, setFormulario] = useState({});

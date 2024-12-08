@@ -3,11 +3,11 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoAddOutline } from "react-icons/io5";
 import clienteAxios from "../config/clienteAxios";
-import useAuth from "../hooks/useAuth";
+
 import useQuery from "../hooks/useQuery";
-import FormularioEncargado from "../components/FormularioEncargado";
-import BarraCambiarPagina from "./BarraCambiarPagina";
-import FormularioAdministrador from "../components/FormularioAdministrador";
+
+import BarraCambiarPagina from "../components/BarraCambiarPagina";
+import FormularioAdministrador from "../components/Admin/FormularioAdministrador";
 
 
 const AdministrarFormularios = () => {

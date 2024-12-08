@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom';
 
-import formatearFecha from '../helpers/convertirFechas';
+import formatearFecha from '../../helpers/convertirFechas';
 import FormularioDetallesAdministrador from './FormularioDetallesAdministrador';
 
 const FormularioAdministrador = ({formulario}) => {

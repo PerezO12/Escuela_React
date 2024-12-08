@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
-import { FiUpload, FiKey, FiLock } from 'react-icons/fi';
-import clienteAxios from '../config/clienteAxios';
+import { FiKey, FiLock } from 'react-icons/fi';
+import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
+import clienteAxios from '../../config/clienteAxios';
 
 const CambiarPassword = ({handleCloseModal}) => {
-  const [passwordActual, setPasswordActual] = useState('');
-  const [passwordNueva, setPasswordNueva] = useState('');
-  const [repetirPassword, setRepetirPassword] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [ mostrarPassword, setMostrarPassword ] = useState(false);
+  const [ mostrarNuevaPassword, setMostrarNuevaPassword ] = useState(false);
+  const [ mostrarRepetirPassword, setMostrarRepetirPassword ] = useState(false);
+
+
+  const [ passwordActual, setPasswordActual ] = useState('');
+  const [ passwordNueva, setPasswordNueva ] = useState('');
+  const [ repetirPassword, setRepetirPassword ] = useState('');
+  const [ mensaje, setMensaje ] = useState('');
 
   useEffect(() => {
     if (passwordNueva && repetirPassword && passwordNueva !== repetirPassword) {
@@ -59,13 +65,22 @@ const CambiarPassword = ({handleCloseModal}) => {
             <FiLock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               id='password-actual'
-              type='password'
+              type={`${mostrarPassword ?"text" : "password"}`}
               value={passwordActual}
               placeholder='Contraseña actual'
               onChange={(e) => setPasswordActual(e.target.value)}
               className='w-full px-9 py-2 border rounded-lg bg-gray-50 text-gray-800 caret-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
               required
             />
+            {mostrarPassword 
+              ? (<LiaEyeSolid
+              className="absolute text-xl top-1/2 right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
+                onClick={e => setMostrarPassword(false)}
+              />) 
+              : (<LiaEyeSlashSolid
+                  className="absolute top-1/2 text-xl right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
+                  onClick={e => setMostrarPassword(true)}
+              />)}
           </div>
       
           {/* Nueva contraseña */}
@@ -73,13 +88,22 @@ const CambiarPassword = ({handleCloseModal}) => {
             <FiKey className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               id='password-nueva'
-              type='password'
+              type={`${mostrarNuevaPassword ?"text" : "password"}`}
               value={passwordNueva}
               placeholder='Nueva contraseña'
               onChange={(e) => setPasswordNueva(e.target.value)}
               className='w-full px-9 py-2 border rounded-lg bg-gray-50 text-gray-800 caret-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
               required
             />
+            {mostrarNuevaPassword 
+              ? (<LiaEyeSolid
+              className="absolute text-xl top-1/2 right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
+                onClick={e => setMostrarNuevaPassword(false)}
+              />) 
+              : (<LiaEyeSlashSolid
+                  className="absolute top-1/2 text-xl right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
+                  onClick={e => setMostrarNuevaPassword(true)}
+              />)}
           </div>
 
           {/* Repetir nueva contraseña */}
@@ -87,13 +111,22 @@ const CambiarPassword = ({handleCloseModal}) => {
             <FiKey className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               id='repetir-password'
-              type='password'
+              type={`${mostrarRepetirPassword ?"text" : "password"}`}
               value={repetirPassword}
               placeholder='Repetir contraseña'
               onChange={(e) => setRepetirPassword(e.target.value)}
               className='w-full px-9 py-2 border rounded-lg bg-gray-50 text-gray-800 caret-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
               required
             />
+            {mostrarRepetirPassword 
+              ? (<LiaEyeSolid
+              className="absolute text-xl top-1/2 right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
+                onClick={e => setMostrarRepetirPassword(false)}
+              />) 
+              : (<LiaEyeSlashSolid
+                  className="absolute top-1/2 text-xl right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
+                  onClick={e => setMostrarRepetirPassword(true)}
+              />)}
           </div>
 
           {/* Botón de enviar */}

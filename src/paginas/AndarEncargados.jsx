@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-
+import { Navigate, useNavigate } from "react-router-dom";
 import clienteAxios from "../config/clienteAxios";
 import useAuth from "../hooks/useAuth";
 import useQuery from "../hooks/useQuery";
-import FormularioEncargado from "../components/FormularioEncargado";
-import BarraCambiarPagina from "./BarraCambiarPagina";
+import FormularioEncargado from "../components/Encargado/FormularioEncargado";
+import BarraCambiarPagina from "../components/BarraCambiarPagina";
 
 
 const AndarEncargados = ({firmados=false}) => {
@@ -14,8 +14,11 @@ const AndarEncargados = ({firmados=false}) => {
     const [ ordenar, setOrdenar ] = useState("Fecha")
     const [ descender, setDescender ] = useState(false);
     const [ flechaActiva, setFlechaActiva ] = useState(true);
-    //const { cargando } = useAuth();
+    const { rol } = useAuth();
     const { query } = useQuery();
+    const navigate = useNavigate();
+
+    if(rol != "encargado") navigate("/"); 
     //if(cargando)  return;
     const queryCompleto = `?${query}OrdenarPor=${ordenar}&NumeroPagina=${pagina}&Descender=${descender}&Firmados=${firmados}`;
     const cargarDatos = async (queryCompleto="") => {

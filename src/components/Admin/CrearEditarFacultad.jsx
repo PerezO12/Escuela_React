@@ -1,4 +1,3 @@
-import React from 'react'
 
 const CrearEditarFacultad = ( {handleCloseModal, crearEditarFacultad, editar=false, setMostrarEditar,id, nombre , mensaje=""} ) => {
   return (
