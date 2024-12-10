@@ -21,7 +21,7 @@ const RutaProtegida = () => {
 
   return (
     <>
-        {auth.id ? 
+        {auth?.id ? 
         (
           <QueryProvider>
             <div className="bg-gray-100 ">
@@ -33,7 +33,7 @@ const RutaProtegida = () => {
                     onClick={e => setMostrarSidebar(!mostrarSidebar)}
                   />
                   {mostrarSidebar && 
-                  (<div className="md:flex relative z-0">
+                  (<div className="md:flex relative z-0 ">
                     {auth.rol != 'admin'?
                       (<Sidebar />)
                     : (<SidebarAdmin />) //todo:mejorar esto

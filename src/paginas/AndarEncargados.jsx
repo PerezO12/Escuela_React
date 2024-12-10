@@ -9,16 +9,17 @@ import BarraCambiarPagina from "../components/BarraCambiarPagina";
 
 
 const AndarEncargados = ({firmados=false}) => {
+    const [ lazyLoading, setLazyLoading ] = useState(false);
     const [ formularios, setFormularios ] = useState([]);
     const [ pagina, setPagina ] = useState(1);
     const [ ordenar, setOrdenar ] = useState("Fecha")
     const [ descender, setDescender ] = useState(false);
     const [ flechaActiva, setFlechaActiva ] = useState(true);
-    const { rol } = useAuth();
+    const { auth } = useAuth();
     const { query } = useQuery();
     const navigate = useNavigate();
 
-    if(rol != "encargado") navigate("/"); 
+
     //if(cargando)  return;
     const queryCompleto = `?${query}OrdenarPor=${ordenar}&NumeroPagina=${pagina}&Descender=${descender}&Firmados=${firmados}`;
     const cargarDatos = async (queryCompleto="") => {
@@ -36,9 +37,25 @@ const AndarEncargados = ({firmados=false}) => {
         }
     }
 
+    const eliminarFormulario = (id) => {
+        setFormularios(formularios.filter(f => f.id != id));
+    }
+    
+
     useEffect(() => {
-        cargarDatos(queryCompleto);
-    }, [queryCompleto])
+        if(auth?.rol != "encargado") {
+            navigate("/");
+            return;
+        }  
+        setLazyLoading(true) 
+    }, [auth])
+
+    useEffect( () =>{
+        if(lazyLoading)
+        {
+            cargarDatos(queryCompleto);
+        }
+        }, [queryCompleto, lazyLoading])
 
 
     const handleOrdenarPor = (ordenarPor) => {
@@ -79,6 +96,7 @@ const AndarEncargados = ({firmados=false}) => {
                     <FormularioEncargado
                         key={formulario.id}
                         formulario={ formulario }
+                        eliminarFormularioFirmado = {eliminarFormulario}
                     />    
                 ))}
 

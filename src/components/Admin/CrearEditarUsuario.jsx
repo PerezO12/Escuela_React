@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
 import clienteAxios from "../../config/clienteAxios";
 import generarPassword from "../../helpers/generarPassword";
+import ConfirmarAccionPassword from "./ConfirmarAccionPassword";
 
 const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = false, idUsuario, rolActual="" }) => {
   
   const [ mostrarPassword, setMostrarPassword ] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [ mensaje, setMensaje ] = useState("");
+  const [ mostrarConfirmar, setMostrarConfirmar ] = useState(false);
 
   const [ roles, setRoles] = useState([]);
   const [ carreras, setCarreras] = useState([]);
@@ -32,7 +34,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
 
   const cargarDatosUsuario = async () => {
     try{
-      const url = (rolActual == "Admin")? "" : `${rolActual}/`
+      const url = (rolActual == "Admin" || rolActual == "Profesor")? "" : `${rolActual}/`
       const { data } = await clienteAxios.get(`/${url}usuario/${idUsuario}`)
       //Mapeo de los valores del usuario
       setNombreCompleto(data.nombreCompleto);
@@ -55,11 +57,13 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
   const obtenerRoles = async () => {
     try {
       const { data } = await clienteAxios.get("/Rol");
+      //voy a filtar el de profesor xq aun no lo tengo cfondigurado
+      const rolesFiltrados = data?.$values.filter(r => r.name !== "Profesor");
       if(editar) {
         const rolEncontrado = data.$values.find(r => r.name == rolActual);
         setRol(rolEncontrado?.name);
       } 
-      setRoles(data.$values)
+      setRoles(rolesFiltrados)
       setMensaje("");
     } catch (error) {
       console.log(error);
@@ -110,8 +114,8 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
     } 
   }
 
-  const handleEnviarFormulario = async (e) => {
-    e.preventDefault();
+  const handleEnviarFormulario = async (passwordAdmin) => {
+    console.log(passwordAdmin);
     const usuario = {
       nombreUsuario: userName,
       email,
@@ -122,6 +126,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
       facultadId,
       roles: [rol],
       departamentoId,
+      passwordAdmin
     }
     if(editar) {
       //crearEditarUsuario(usuario)
@@ -130,21 +135,39 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
         await crearUsuario(usuario);
     }
   }
+  const handleCloseConfirmar = () => {
+    setMostrarConfirmar(false);
+  }
 
   const crearUsuario = async (usuario) => {
     try{
-      const { data } = await clienteAxios.post(`/account/registrar/${rol.toLowerCase()}`, usuario);
+      const { data } = await clienteAxios.post(`/account/registrar/${rol}`, usuario);
       crearEditarUsuario(data);
+      setMostrarConfirmar(false);
       setMensaje("Usuario creado exitosamente");
+
       setTimeout(() => {
         setMensaje("");
         handleCloseModal();
-      }, 3000)
-    } catch (error) {
+      }, 2000)
+    } 
+    catch (error) {
       //todo: mejorar esto
       //POSIBLES VALIDACIONES
-      const errores = error.response.data?.errors || error.response.data?.msg[0] || error.response.data?.msg;
-      
+      const errores = error.response?.data?.errors || error.response?.data?.msg;
+      console.log(error);
+      console.log("se rompio")
+      if(error.status == 401 && errores?.includes("Contraseña"))
+      {
+        setMensaje("Contraseña incorrecta");
+        setTimeout(() => {
+          setMensaje("");
+        }, 3000);
+      } 
+      else{
+        setMostrarConfirmar(false);
+        console.log(mostrarConfirmar)
+      }
       if(errores?.CarnetIdentidad) {
         setMensaje("El carnet de identidad no es válido");
       }
@@ -159,11 +182,11 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
       }
       else{
         setMensaje(errores?.$values[0]?.description || "Ocurrio un error");
-        //console.log(error.response.data);
+        console.log(error.response.data);
       }
       setTimeout(() => {
         setMensaje("")
-      }, 2500);
+      }, 4000);
       
     }
   }
@@ -179,7 +202,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
       setTimeout(()=> {
         setMensaje("")
         handleCloseModal();
-      }, 2500);
+      }, 2000);
     }
     catch(error){
       //todo:Arreglar luego
@@ -228,7 +251,10 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
         {/* Formulario */}
         <form
           className="space-y-6"
-          onSubmit={(e) => handleEnviarFormulario(e)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            setMostrarConfirmar(true);
+          }}
         >
           <div>
             <label htmlFor="nombre" className="block text-lg font-medium text-gray-700 mb-2">
@@ -430,6 +456,15 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
           {mensaje}
         </p>
       </div>
+      {mostrarConfirmar && (
+        <ConfirmarAccionPassword
+          handleCloseModal={handleCloseConfirmar}
+          funcionEjecutar={handleEnviarFormulario}
+          mensaje = {"Necesitamos su contraseña"}
+          mensajeError = {mensaje}
+          accion = {"Confirmar"}
+        />
+      )}
     </div>
   );
 }  

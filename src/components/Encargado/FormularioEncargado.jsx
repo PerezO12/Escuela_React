@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import formatearFecha from "../../helpers/convertirFechas";
 import FormularioFirmar from "./FormularioFirmar";
-const FormularioEncargado = ( {formulario} ) => {
+const FormularioEncargado = ( {formulario, eliminarFormularioFirmado} ) => {
     const {
         id,
         nombreCompletoEstudiante,
@@ -37,8 +37,13 @@ const FormularioEncargado = ( {formulario} ) => {
               <p className="hover:text-blue-700 lg:text-base text-sm transition-colors truncate">{motivo}</p>
           </div>
       </div>
-      <div>
-        {mostrarFirmarFormulario && <FormularioFirmar handleCloseModal={handleCloseModal} id={id}/>}
+      <div className="">
+        {mostrarFirmarFormulario && 
+          <FormularioFirmar 
+            handleCloseModal={handleCloseModal} 
+            id={id}
+            eliminarFormularioFirmado={eliminarFormularioFirmado}
+            />}
       </div>
     </>
   )

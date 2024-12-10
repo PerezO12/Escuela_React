@@ -7,8 +7,12 @@ import BarraCambiarPagina from '../components/BarraCambiarPagina';
 import useQuery from "../hooks/useQuery";
 import Facultades from "../components/Facultades"
 import CrearEditarFacultad from '../components/Admin/CrearEditarFacultad';
+import ConfirmarAccionPassword from '../components/Admin/ConfirmarAccionPassword';
 
 const AdministrarFacultades = () => {
+  const [idUserBorrar, setIdUserBorrar] = useState("");
+  const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
+
   const [pagina, setPagina] = useState(1);
   const [facultades, setFacultades] = useState([]);
   const [flechaActiva, setFlechaActiva] = useState(true);
@@ -33,17 +37,7 @@ const AdministrarFacultades = () => {
       console.log(error);
     }
   };
-  const borrarFacultad = async (id) => {
-    const respuesta = confirm("¿Desea eliminar la facultad?");
-    if(!respuesta) return;
-    try{
-      const { data } = await clienteAxios.delete(`/Facultad/${id}`);
-      setFacultades(facultades.filter(f => f.id != id));
-    } catch(error) {
-        console.log(error);
-    }
 
-  }
   const EditarFacultad = async ( nombre, id ) =>{
     try{
       const { data } = await clienteAxios.put(`/Facultad/${id}`, {nombre});
@@ -72,6 +66,10 @@ const AdministrarFacultades = () => {
   const handleCloseModal = () => {
     setMostrarFormulario(false);
   };
+  const handleCloseConfirmar = () => {
+    setMensaje("");
+    setMostrarConfirmar(false);
+  }
 
   const handleCambiarPagina = (a) => {
     if (pagina + a <= 0) {
@@ -111,10 +109,6 @@ const AdministrarFacultades = () => {
                 mensaje={mensaje}
                 />
             </div>
-            <MdDelete 
-              className='text-3xl cursor-pointer text-zinc-600 hover:text-red-700 hover:scale-110' 
-              onClick={e => borrarFacultad(facultad.id)}
-              />  
           </div>
         ))}
       </div>

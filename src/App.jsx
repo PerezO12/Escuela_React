@@ -37,7 +37,7 @@ function App() {
           {"Rutas para encargados"}
           <Route path='/encargado' element={ <RutaProtegida />}>
             <Route index element={<AndarEncargados firmados={false}/>}/>
-            <Route path='historial' element={<AndarEncargados firmados={true}/>} />
+            {/* <Route path='historial' element={<AndarEncargados firmados={true}/>} /> */}
           </Route>
 
           {"Rutas para Administrador"}

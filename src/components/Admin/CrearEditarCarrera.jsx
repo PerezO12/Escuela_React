@@ -16,6 +16,9 @@ const CrearEditarCarrera = ({ handleCloseModal, crearEditarCarrera, editar = fal
               ];
               setFacultades(facultadesActualizadas);
             }
+            else{
+              setFacultades(data.$values);
+            }
           } else {
             setFacultades(data.$values);
           }

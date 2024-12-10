@@ -4,7 +4,6 @@ import { MdDelete } from "react-icons/md";
 import clienteAxios from '../config/clienteAxios';
 import useQuery from '../hooks/useQuery'
 import BarraCambiarPagina from '../components/BarraCambiarPagina';
-import CrearEditarDepartamento from '../components/Admin/CrearEditarDepartamento';
 import Usuarios from '../components/Admin/Usuarios';
 import CrearEditarUsuario from '../components/Admin/CrearEditarUsuario';
 import ConfirmarAccionPassword from '../components/Admin/ConfirmarAccionPassword';
@@ -12,10 +11,10 @@ import ConfirmarAccionPassword from '../components/Admin/ConfirmarAccionPassword
 
 const AdministrarUsuarios = () => {
   const [idUserBorrar, setIdUserBorrar] = useState("");
+  const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
 
   const [pagina, setPagina] = useState(1);
   const [usuarios, setUsuarios] = useState([]);
-  const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
   const [flechaActiva, setFlechaActiva] = useState(true);
   const [ordenar, setOrdenar] = useState("Fecha");
   const [descender, setDescender] = useState(false);
@@ -44,10 +43,13 @@ const AdministrarUsuarios = () => {
         data: { password } 
       })
       setUsuarios(usuarios.filter(usu => usu.id !== idUserBorrar));
-      setMostrarConfirmar(false);
-      setMensaje("")
+      setMensaje("El usuario fue borrado exitosamente");
+      setTimeout(() => {
+        setMensaje("");
+        setMostrarConfirmar(false);
+      }, 1500);
     } catch (error) {
-      setMensaje(error.response.data.msg);
+      setMensaje(error.response.data.msg || "Ocurrio un error");
     }
   };
 

@@ -87,7 +87,7 @@ const AdministrarDepartamentos = () => {
 
   return (
     <div className='md:px-10 lg:px-0 px-4'>
-      <div className="grid grid-cols-3 lg:gap-20 px-4 py-2 ">
+      <div className="grid grid-cols-4 lg:gap-16 px-4 py-2 ">
         <p 
           className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
           onClick={() => handleOrdenarPor("Nombre")}
@@ -96,9 +96,15 @@ const AdministrarDepartamentos = () => {
         </p>
         <p 
           className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
+          onClick={() => handleOrdenarPor("Encargado")}
+        >
+          Encargados
+        </p>
+        <p 
+          className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
           onClick={() => handleOrdenarPor("Facultad")}
         >
-          Facultad
+          Facultades
         </p>
         <p 
           className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"

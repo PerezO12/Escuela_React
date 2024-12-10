@@ -38,7 +38,7 @@ const Sidebar = () => {
           Nuevo Formulario
         </Link>
       )}
-      { rol == "encargado"
+{/*       { rol == "encargado"
       &&
         (<Link
           to="historial"
@@ -48,7 +48,7 @@ const Sidebar = () => {
         >
           Historial
         </Link>
-      )}
+      )} */}
     </aside>
   );
 };

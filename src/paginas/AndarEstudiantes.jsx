@@ -7,15 +7,14 @@ import useAuth from '../hooks/useAuth';
 import useQuery from '../hooks/useQuery';
 
 const AndarEstudiantes = () => {
+  const [ lazyLoading, setLazyLoading ] = useState(false);
   const [ formularioId, setFormularioId ] = useState('');
   const [ formularios, setFormularios ] = useState([]);
   const [ alerta, setAlerta ] = useState({});
-  const { cargando, rol } = useAuth();
+  const { auth } = useAuth();
   const { query } = useQuery(); 
+//  if(cargando)  return(<div>Cargando...</div>);
   const navigate = useNavigate();
-  if(cargando)  return;
-  
-  if(rol != "estudiante") navigate('/'); 
   
   const cargarDatos = async (query = '') =>{
     try{
@@ -30,15 +29,25 @@ const AndarEstudiantes = () => {
       })
     }
   };
+  useEffect(() => {
+    if(auth?.rol != "estudiante") {
+        navigate("/");
+        return;
+    }   
+    setLazyLoading(true)
+  }, [auth])
 
   useEffect( () =>{
-    cargarDatos(query);
-  }, [query])
+    if(lazyLoading)
+    {
+      cargarDatos(query);
+    }
+  }, [query, lazyLoading])
 
-  if (cargando) {
-    return <div>Cargando...</div>;
-  }
+
   const { msg } = alerta
+  //todo esto no es eficient aqui, lo ideal seria una ruta rpotegida
+
   return (
     <>
       {(formularios.length == 0 && !msg) && (
@@ -49,7 +58,7 @@ const AndarEstudiantes = () => {
 
       { msg && <Alerta alerta={alerta} />}
       
-      <div className='lg:grid grid-cols-1 sm:grid-cols-2 lg:gap-4
+      <div className='lg:grid grid-cols-2 sm:grid-cols-2 lg:gap-4
       '>
         {formularios.map( ( formulario ) => (
             <FormularioEstudiante 

@@ -2,7 +2,7 @@ import { useState, useEffect} from 'react'
 import formatearFecha from '../helpers/convertirFechas';
 
 import clienteAxios from '../config/clienteAxios';
-import CrearEditarUsuario from './Admin/CrearEditarUsuario';
+import CrearEditarFacultad from './Admin/CrearEditarFacultad';
 
 const Facultades = ({facultad, EditarFacultad, mensaje}) => {
   const { id, nombre, fechaCreacion } = facultad;
@@ -15,7 +15,7 @@ const Facultades = ({facultad, EditarFacultad, mensaje}) => {
   return (
     <div>
       {mostrarEditar && (
-        <CrearEditarUsuario 
+        <CrearEditarFacultad 
           handleCloseModal={handleCloseModal} 
           crearEditarFacultad={EditarFacultad} 
           editar={true}

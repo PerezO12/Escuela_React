@@ -50,7 +50,7 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
     }
 
     return(
-        <div className="mx-auto md:mx-12 lg:my-2 md:my-2 bg-white shadow-md px-5 py-5 rounded-xl w-auto">
+        <div className="lg:mx-auto mx-12 lg:my-2 px-5 py-5 md:my-2 my-10 bg-white shadow-md rounded-xl lg:w-3/4  md:w-auto">
 
                 <p className="font-bold mb-3 text-gray-700 uppercase">Nombre del Encargado: {""}
                     <span className="font-normal normal-case">{ nombreEncargado }</span>

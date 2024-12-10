@@ -10,8 +10,6 @@ const AuthProvider = ({children}) => {
     const [ auth, setAuth ] = useState(null);
     const [ cargando, setCargando ] = useState(true);
 
-    const navigate = useNavigate();
-
     useEffect( () => {
         const autenticarUsuario = async () => {
             const token = localStorage.getItem('token');
@@ -31,6 +29,7 @@ const AuthProvider = ({children}) => {
                  
                 const { data } = await clienteAxios.get('/account/obtener-perfil', config);
                 data.rol = data.rol.toLowerCase();
+
                 setAuth(data);
                 //Redirecciones
 /*                 if(data.rol == 'admin') navigate('admin');
@@ -44,6 +43,7 @@ const AuthProvider = ({children}) => {
         }
         autenticarUsuario();
     }, []);
+
   return (
     <AuthContext.Provider
             value={{

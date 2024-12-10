@@ -45,14 +45,14 @@ const SidebarAdmin = () => {
         Facultades
         </Link>
 
-        <Link
+{/*         <Link
             to="formularios"
             className="w-full flex items-center justify-center bg-sky-600 hover:bg-sky-700
                   text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-300 
                   transform hover:scale-105 mb-4"
         >
         Formularios
-        </Link>
+        </Link> */}
         <Link
             to=""
             className="w-full flex items-center justify-center bg-sky-600 hover:bg-sky-700

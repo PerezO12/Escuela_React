@@ -28,18 +28,43 @@ const CambiarPassword = ({handleCloseModal}) => {
       setMensaje('Las contraseñas nuevas no coinciden.');
       return;
     }
+    if(passwordNueva == passwordActual)
+    {
+      setMensaje('Las contraseña antigua y la nueva son iguales.');
+      return;
+    }
     // Simulación de lógica de cambio de contraseña (debes conectar con tu API aquí)
     try {
       const { data } = await clienteAxios.post("/account/cambiar-password", {
         passwordActual,
         passwordNueva
       })
-      setMensaje(data);
-      console.log(data);
+      setMensaje("La contraseña fue cambiada exitosamente.");
+      setTimeout(() => {
+        setMensaje("");
+        handleCloseModal();
+      }, 2000);
     } catch(error)
     {
-      console.log(error.response.data.$values[0].description);
-      setMensaje(error.response.data.$values[0].description)
+      const errores = error.response.data.msg?.$values[0]?.code
+      if(errores?.includes("PasswordMismatch"))
+      {
+        setMensaje("Contraseña incorrecta");
+      }
+      else if(errores?.includes("PasswordTooShort"))
+      {
+        setMensaje("La contraseña es muy corta")
+      }
+      else if(errores?.includes("PasswordRequires"))
+      {
+        setMensaje("La contraseña tiene que estar formada por letras, números u otros caracteres.")
+      }
+      else{
+        console.log("Errores: ", errores);
+        console.log(error.response.data)
+        setMensaje("Ocurrio un error")
+
+      }
     }
   };
   
@@ -139,7 +164,7 @@ const CambiarPassword = ({handleCloseModal}) => {
 
           {/* Mensaje de error o éxito */}
           {mensaje && (
-            <p className={`mt-4 text-center text-sm ${mensaje.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
+            <p className={`mt-4 text-center text-sm ${mensaje?.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
               {mensaje}
             </p>
           )}
