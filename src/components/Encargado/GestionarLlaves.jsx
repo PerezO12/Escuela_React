@@ -37,7 +37,7 @@ const GestionarLlaves = () => {
         </button>
       </div>
 
-      {/* Cambiar llave pública */}
+      {/* Cambiar clave pública */}
       {cambiarLlaves && (
         <CambiarLlavePublica closeModal={closeModal} />
       )}

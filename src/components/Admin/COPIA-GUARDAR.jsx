@@ -5,9 +5,6 @@ import generarPassword from "../../helpers/generarPassword";
 import ConfirmarAccionPassword from "./ConfirmarAccionPassword";
 import { TfiReload } from "react-icons/tfi";
 
-import validarCampos from "../../helpers/validarCampos";
-import procesarErrores from "../../helpers/mapeoErrores";
-
 const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = false, idUsuario, rolActual="" }) => {
   
   const [ mostrarPassword, setMostrarPassword ] = useState(false);
@@ -102,7 +99,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
         console.log(error);
         setMensaje("No se han podido obtener las carreras. inténtalo más tarde.")
       } 
-  }
+    }
   const obtenerDepartamentos = async (facultadId) => {
     try {
       const { data } = await clienteAxios.get(`/Departamento?FacultadId=${facultadId}`);
@@ -118,27 +115,42 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
     } 
   }
 
-  const handleValidarCampos = () => {
-    const { nuevosErrores, mensajes } = validarCampos(
-        { 
-          nombreCompleto,
-          nombreUsuario: userName, 
-          carnetIdentidad,
-          password,
-          email
-        });
-
-    if(Object.keys(nuevosErrores).length > 0) {
-      setErrores(nuevosErrores)
-      setMensaje((mensajes.join("\n")));
-      return;
-    }else{
-      setErrores({});
-      setMensaje("");
+  const handleValidarCampos = async () => {
+    //validaciones
+    const nuevosErrores = {};
+   if (!validarCarnetIdentidad(carnetIdentidad)) {
+     nuevosErrores.carnetIdentidad = "El carné de identidad no es válido.";
+     setMensaje("El carné de identidad no es válido.")
     }
+  
+    if (!validarEmail(email)) {
+      nuevosErrores.email = "El correo electrónico no es válido.";
+      setMensaje("El correo electrónico no es válido.");
+    }
+     
+    if (!validarNombreUsuario(userName)) {
+      nuevosErrores.nombreUsuario = "El nombre de usuario no es válido.";
+      setMensaje("El nombre de usuario no es válido.");
+    }
+     
+    if (!validarNombreCompleto(nombreCompleto)) {
+     nuevosErrores.nombreCompleto = "El nombre completo no es válido.";
+     setMensaje("El nombre no es válido.");
+    }
+    if (!validarPassword(password)) {
+      nuevosErrores.password = "La contraseña tiene que tener más de 8 cáracteres.";	
+      setMensaje("El nombre no es válido.");
+     }
+    if (Object.keys(nuevosErrores).length > 0) {
+     setErrores(nuevosErrores);
+     return;
+    }
+    setMensaje("");
+    setErrores({});
+
     setMostrarConfirmar(true);
   }
-  const handleEnviarFormulario = async (passwordAdmin="") => {
+  const handleEnviarFormulario = async (passwordAdmin) => {
     const usuario = {
       nombreUsuario: userName,
       email,
@@ -151,11 +163,11 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
       departamentoId,
       passwordAdmin
     }
-
     if(editar) {
+      //crearEditarUsuario(usuario)
       await editarUsuario(usuario);
-    } else { 
-      await crearUsuario(usuario);
+    } else { //para crear
+        await crearUsuario(usuario);
     }
   }
   const handleCloseConfirmar = () => {
@@ -175,7 +187,42 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
       }, 1000)
     } 
     catch (error) {
-      procesarErrores(error.response.data, setMensaje, setMostrarConfirmar);
+      console.log(error.response.data);
+      const errores = error.response.data;
+      const erroresModelo = error.response.data?.errors;
+      const errorMessages = {
+        CarnetIdentidad: "El carné de identidad no es válido.",
+        NombreCompleto: "El nombre no es válido.",
+        Email: "No es un correo válido.",
+        Password: "La contraseña es muy corta."
+      };
+    
+      // Verificar errores del modelo
+      for (const key in erroresModelo) {
+        if (erroresModelo[key]) {
+          setMensaje(errorMessages[key]);
+          break;
+        }
+      }
+    
+      // Verificar otros errores
+      if (errores?.msg?.includes("Username")) {
+        setMensaje("El usuario ya existe.");
+        setMostrarConfirmar(false);
+      } else if (errores?.msg?.includes("Contraseña incorrecta")) {
+        setMensaje("Contraseña incorrecta");
+        
+      } else if(errores?.msg?.includes("Passwords must have at least ")) {
+        setMensaje("La contraseña debe tener al menos un carácter no alfanumérico (por ejemplo, @, #, $, etc.), al menos un dígito (0-9) y al menos una letra mayúscula (A-Z)");
+        setMostrarConfirmar(false);
+      } else {
+        setMostrarConfirmar(false);
+        if(errores?.msg && mensaje == '') setMensaje(errores.msg);
+      }
+
+      setTimeout(() => {
+        setMensaje("");
+      }, 3000);
     }
   }
   const editarUsuario = async (usuario) => {
@@ -186,15 +233,15 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
       delete usuario.password
       usuario.roles.$values = usuario.roles
       crearEditarUsuario(usuario);
-
       setMensaje("El usuario se actualizó exitosamente")
       setTimeout(()=> {
         setMensaje("")
         handleCloseModal();
-      }, 1000);
+      }, 2000);
     }
     catch(error){
-      procesarErrores(error.response.data, setMensaje, setMostrarConfirmar);
+      //todo:Arreglar luego
+      setMensaje("Ocurrió un error, revisa la consola")
     }
   }  
 
@@ -211,9 +258,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
   //obtiene las facultades si el usuario es un estudiante
   useEffect(() => {
     if(!isLoading && rol != "Admin") obtenerFacultades();
-    setFacultadId(0);
-    setDepartamentoId(0);
-    setCarreraId(0);
+    //todo:trabajador
   }, [isLoading, rol]);
 
   useEffect(() => {
@@ -221,7 +266,28 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
     if (facultadId && rol == "Encargado" ) obtenerDepartamentos(facultadId);
   }, [facultadId]);
 
-  
+  //funciones de validacion todo: mover a un archivo
+  const validarCarnetIdentidad = (carnet) => {
+    return carnet.length === 11;
+  };
+
+  const validarEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const validarNombreUsuario = (nombreUsuario) => {
+    return nombreUsuario.length >= 4;
+  };
+
+  const validarNombreCompleto = (nombreCompleto) => {
+    return nombreCompleto.length >= 10; 
+  };
+
+  const validarPassword = (password) => {
+    return password.length >= 8; 
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
@@ -240,7 +306,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
   
         {/* Formulario */}
         <form
-          className="space-y-6 mb-2"
+          className="space-y-6"
           onSubmit={(e) => {
             e.preventDefault();
             handleValidarCampos();
@@ -442,23 +508,20 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
           </button>
         </form>
   
-        {mensaje?.split('\n').map((line, index) => (
-          <p key={index} className={`text-center text-sm ${mensaje?.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
-            {line}
-          </p>
-        ))}
+        <p className={`mt-4 text-center text-sm ${mensaje?.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
+          {mensaje}
+        </p>
       </div>
       {mostrarConfirmar && (
         <ConfirmarAccionPassword
           handleCloseModal={handleCloseConfirmar}
           funcionEjecutar={handleEnviarFormulario}
-          mensaje = {(rol =="Admin")? "Necesitamos su contraseña" : `¿Seguro que desea ${editar ? "esditar" : "crear"} el usuario?`}
+          mensaje = {"Necesitamos su contraseña"}
           mensajeError = {mensaje}
           accion = {"Confirmar"}
-          requiredPassword={(rol =="Admin") || editar}
         />
       )}
     </div>
   );
 }  
-export default CrearEditarUsuario;
+export default CrearEditarUsuario

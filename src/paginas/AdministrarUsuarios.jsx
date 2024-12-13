@@ -47,9 +47,10 @@ const AdministrarUsuarios = () => {
       setTimeout(() => {
         setMensaje("");
         setMostrarConfirmar(false);
-      }, 1500);
+      }, 1000);
     } catch (error) {
-      setMensaje(error.response.data.msg || "Ocurrio un error");
+      console.log(error)
+      setMensaje(error.response.data.msg || "Ocurrió un error");
     }
   };
 

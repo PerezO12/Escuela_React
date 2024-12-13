@@ -33,8 +33,8 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
             textareaRef.current.focus();
         }
     }, [isEditing]);
-    //TODOURGENTE: HACER UN REFRESH D LOS DATOS
-    //actualizar el fomrulario
+    //TODO URGENTE: HACER UN REFRESH D LOS DATOS
+    //actualizar el formulario
     const actualizarFormulario = async () => {
         //todo:cambiar este alert
         if(motivoEditado.length < 5 || motivoEditado.length > 1000) {

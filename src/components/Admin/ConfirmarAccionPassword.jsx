@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { FiLock } from 'react-icons/fi';
+import { FiAlertTriangle, FiLock } from 'react-icons/fi';
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
 
 
-const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, mensajeError, accion="Eliminar", requiredPassword=true }) => {
+const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, mensajeError, accion="Eliminar", alerta="", requiredPassword=true }) => {
     const [ password , setPassword ] = useState("");
     const [ mostrarPassword, setMostrarPassword ] = useState(false);
+    const [ mostrarAdvertencia, setMostrarAdvertencia ] = useState(true);
 
     let color = (accion=="Eliminar")?("bg-red-600 hover:bg-red-700"): ("bg-blue-600 hover:bg-blue-700");
   return (
@@ -48,7 +49,7 @@ const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, m
             <div className='relative flex justify-between items-center space-x-4 px-2'>
                 <button
                     className={`mt-8 lg:w-32 w-24 flex items-center justify-center text-white font-semibold py-3 px-5 rounded-full 
-                                ${password.length < 7 ? "bg-gray-300" : color+" shadow-lg transition duration-300 transform hover:scale-105 capitalize"}`}
+                                ${(password.length < 7 && requiredPassword) ? "bg-gray-300" : color+" shadow-lg transition duration-300 transform hover:scale-105 capitalize"}`}
                     disabled={password.length < 7 && requiredPassword}
                     onClick={e => funcionEjecutar(password || "")}
                 >
@@ -66,6 +67,17 @@ const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, m
             <p className={`mt-4 text-center text-sm ${mensajeError.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
                 {mensajeError}
             </p>
+        {(alerta != "") && (<div>
+        <FiAlertTriangle
+            className="text-red-500 text-4xl mr-3 hover:cursor-pointer hover:scale-110 transition duration-300"
+            onClick={() => setMostrarAdvertencia(!mostrarAdvertencia)}
+            />
+            {mostrarAdvertencia && (<div className="flex flex-col sm:flex-row items-start sm:items-center bg-red-100 p-4 rounded-lg border border-red-300">
+                <p className="text-black lg:text-sm md:text-sm text-xs">
+                <strong>Advertencia Técnica:</strong> {alerta}
+                 </p>
+            </div>)}
+        </div>)}
         </div>
     </div>
   )

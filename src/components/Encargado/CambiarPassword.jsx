@@ -30,7 +30,7 @@ const CambiarPassword = ({handleCloseModal}) => {
     }
     if(passwordNueva == passwordActual)
     {
-      setMensaje('Las contraseña antigua y la nueva son iguales.');
+      setMensaje('La contraseña antigua y la nueva son iguales.');
       return;
     }
     // Simulación de lógica de cambio de contraseña (debes conectar con tu API aquí)
@@ -57,12 +57,12 @@ const CambiarPassword = ({handleCloseModal}) => {
       }
       else if(errores?.includes("PasswordRequires"))
       {
-        setMensaje("La contraseña tiene que estar formada por letras, números u otros caracteres.")
+        setMensaje("La contraseña debe tener al menos un carácter no alfanumérico (por ejemplo, @, #, $, etc.), al menos un dígito (0-9) y al menos una letra mayúscula (A-Z)")
       }
       else{
         console.log("Errores: ", errores);
         console.log(error.response.data)
-        setMensaje("Ocurrio un error")
+        setMensaje("Ocurrió un error")
 
       }
     }

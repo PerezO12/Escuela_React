@@ -7,9 +7,13 @@ import BarraCambiarPagina from '../components/BarraCambiarPagina';
 import CrearEditarDepartamento from '../components/Admin/CrearEditarDepartamento';
 import Departamento from '../components/Admin/Departamento';
 
+import ConfirmarAccionPassword from '../components/Admin/ConfirmarAccionPassword';
+
 const AdministrarDepartamentos = () => {
   const [pagina, setPagina] = useState(1);
   const [departamentos, setDepartamentos] = useState([]);
+  const [ idDepartamento, setIdDepartamento ] = useState([]);
+  const [ mostrarConfirmar, setMostrarConfirmar] = useState(false);
 
   const [flechaActiva, setFlechaActiva] = useState(true);
   const [ordenar, setOrdenar] = useState("Fecha");
@@ -30,14 +34,20 @@ const AdministrarDepartamentos = () => {
     }
   };
 
-  const borrarDepartamento = async (id) => {
-    const respuesta = confirm("¿Desea eliminar el departamento?");
-    if (!respuesta) return;
+  const borrarDepartamento = async (password) => {
     try {
-      const { data } = await clienteAxios.delete(`/Departamento/${id}`);
-      setDepartamentos(departamentos.filter(dep => dep.id !== id));
+      const { data } = await clienteAxios.delete(`/Departamento/${idDepartamento}`, {
+        data: { password } 
+      });
+      setDepartamentos(departamentos.filter(dep => dep.id !== idDepartamento)); 
+      setMensaje('Departmaento borrado exitosamente.');
+      setTimeout(() => {
+        setMostrarConfirmar(false);
+        setMensaje("");
+      }, 800);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
+      setMensaje(error.response.data?.msg || "Ocurrio un error al eliminar el departamento.");
     }
   };
 
@@ -47,6 +57,7 @@ const AdministrarDepartamentos = () => {
       const { data } = await clienteAxios.put(`/Departamento/${id}`, { nombre, facultadId });
 
       setDepartamentos(departamentos.map(dep => dep.id === data.id ? { ...dep, nombre: data.nombre, facultad: data.facultad } : dep));
+
     } catch (error) {
       console.log(error);
       setMensaje(error.response.data.errors.Nombre);
@@ -57,8 +68,11 @@ const AdministrarDepartamentos = () => {
     try {
       const { data } = await clienteAxios.post(`/Departamento`, { nombre, facultadId });
       setDepartamentos([...departamentos, data]);
-      setMostrarFormulario(false);
-      setMensaje('');
+      setMensaje('Departmaento creado exitosamente.');
+      setTimeout(() => {
+        setMostrarFormulario(false);
+        setMensaje("");
+      }, 800);
     } catch (error) {
       setMensaje(error.response.data.errors.Nombre);
     }
@@ -73,13 +87,16 @@ const AdministrarDepartamentos = () => {
       }
       setOrdenar(ordenarPor);
   }
-
   const handleCambiarPagina = (a) => {
     if (pagina + a <= 0) {
       return;
     }
     setPagina(pagina + a);
   };
+  const handleCloseConfirmar = () => {
+    setMostrarConfirmar(false);
+    setMensaje("");
+  }
 
   useEffect(() => {
     cargarDatos(queryCompleto);
@@ -128,7 +145,10 @@ const AdministrarDepartamentos = () => {
             </div>
             <MdDelete 
               className='text-3xl cursor-pointer text-zinc-600 hover:text-red-700 hover:scale-110' 
-              onClick={() => borrarDepartamento(departamento.id)}
+              onClick={() => {
+                setIdDepartamento(departamento.id);
+                setMostrarConfirmar(true);
+              }}
             />
           </div>
         ))}
@@ -159,7 +179,18 @@ const AdministrarDepartamentos = () => {
           mensaje={mensaje}
         />
       )}
+      {/*Mostrar la confirmacion del eliminar */}
+      {mostrarConfirmar &&(
+        <ConfirmarAccionPassword
+          handleCloseModal={handleCloseConfirmar}
+          funcionEjecutar={borrarDepartamento}
+          mensaje = {"¿Seguro que desea eliminar el departamento?"}
+          mensajeError = {mensaje} 
+          alerta = {"Tenga en cuenta que si elimina el departamento tambien se eliminara el encargado."}
+        />
+      )}
     </div>
+    
   );
 };
 

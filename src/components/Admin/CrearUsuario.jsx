@@ -1,228 +1,230 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect  } from "react";
+
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
 import clienteAxios from "../../config/clienteAxios";
 import generarPassword from "../../helpers/generarPassword";
 import ConfirmarAccionPassword from "./ConfirmarAccionPassword";
 import { TfiReload } from "react-icons/tfi";
 
-import validarCampos from "../../helpers/validarCampos";
-import procesarErrores from "../../helpers/mapeoErrores";
-
-const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = false, idUsuario, rolActual="" }) => {
+const CrearUsuario = ({ handleCloseModal, rolActual, agregarUsuario }) => {
   
-  const [ mostrarPassword, setMostrarPassword ] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [ mensaje, setMensaje ] = useState("");
-  const [ mostrarConfirmar, setMostrarConfirmar ] = useState(false);
-  const [errores, setErrores] = useState({});
-
-  const [ roles, setRoles] = useState([]);
-  const [ carreras, setCarreras ] = useState([]);
-  const [ departamentos, setDepartamentos ] = useState([]);
-  const [ facultades, setFacultades ] = useState([]);
-
+    const [ mostrarPassword, setMostrarPassword ] = useState(false);
+    const [ mensaje, setMensaje ] = useState("");
+    const [ mostrarConfirmar, setMostrarConfirmar ] = useState(false);
+    const [errores, setErrores] = useState({});
   
-  const [ rol, setRol ]= useState(rolActual[0] || "");
-  const [ carreraId, setCarreraId ] = useState(0);
-  const [ departamentoId, setDepartamentoId ] = useState(0);
-  const [ facultadId, setFacultadId ] = useState(0);
-
-  const [ carreraNombre, setCarreraNombre ] = useState("");
-  const [ departamentoNombre, setDepartamentoNombre ] = useState("")
-  const [ carnetIdentidad, setCarnetIdentidad ] = useState("");
-  const [ email, setEmail ] = useState("");
-  const [ facultadNombre, setFacultadNombre ] = useState("");
-  const [ password, setPassword ] = useState(generarPassword(15));//genera password de 15 caracteres
-  const [ nombreCompleto, setNombreCompleto ] = useState("");
-  const [ userName, setUserName ] = useState("");
-
-
-  const cargarDatosUsuario = async () => {
-    try{
-      const url = (rolActual == "Admin" || rolActual == "Profesor")? "" : `${rolActual}/`
-      const { data } = await clienteAxios.get(`/${url}usuario/${idUsuario}`)
-      //Mapeo de los valores del usuario
-      setNombreCompleto(data.nombreCompleto);
-      setCarnetIdentidad(data.carnetIdentidad);
-      setEmail(data.email);
-      setUserName(data.nombreUsuario);
-      setFacultadNombre(data?.facultadNombre || data?.nombreFacultad ||"");
-      setCarreraNombre(data?.nombreCarrera || "");
-      setDepartamentoId(data?.departamentoId);
-      setDepartamentoNombre(data?.departamentoNombre || "");
-      setPassword("");
-      setMensaje("");
-      setIsLoading(false);
-    } catch(error){
-      console.error("Error al cargar datos del usuario: ", error)
-      setMensaje("Error");
-    }
-  }
-
-  const obtenerRoles = async () => {
-    try {
-      const { data } = await clienteAxios.get("/Rol");
-      //voy a filtar el de profesor xq aun no lo tengo configurado
-      const rolesFiltrados = data?.$values.filter(r => r.name !== "Profesor");
-      if(editar) {
-        const rolEncontrado = data.$values.find(r => r.name == rolActual);
-        setRol(rolEncontrado?.name);
-      } 
-      setRoles(rolesFiltrados)
-      setMensaje("");
-    } catch (error) {
-      setMensaje("No se han podido obtener los roles. inténtalo más tarde");
-    }
-  }
-
-  const obtenerFacultades = async () => {
-    try {
-      const { data } = await clienteAxios.get("/Facultad/");
-
-      if(editar) {
-        const facultadEncontrada = data.$values.find(fac => fac.nombre === facultadNombre);
-        setFacultadId(facultadEncontrada?.id || "");
-      } 
-      setFacultades(data.$values);
-    } catch (error) {
-      setMensaje("No se han podido obtener las facultades. inténtalo más tarde");
-    }
-  }
-
-  const obtenerCarrearas = async (facultadId) => {
-      try {
-        const { data } = await clienteAxios.get(`/Carrera?FacultadId=${facultadId}`);
-        if(editar) {
-          const carreraEncontrada = data.$values.find(carrera => carrera.nombre === carreraNombre);
-          setCarreraId(carreraEncontrada?.id || data?.$values[0]?.id);
+    const [ roles, setRoles] = useState([]);
+    const [ carreras, setCarreras ] = useState([]);
+    const [ departamentos, setDepartamentos ] = useState([]);
+    const [ facultades, setFacultades ] = useState([]);
+  
+    
+    const [ rol, setRol ]= useState(rolActual[0] || "");
+    const [ carreraId, setCarreraId ] = useState(0);
+    const [ departamentoId, setDepartamentoId ] = useState(0);
+    const [ facultadId, setFacultadId ] = useState(0);
+  
+    const [ carreraNombre, setCarreraNombre ] = useState("");
+    const [ departamentoNombre, setDepartamentoNombre ] = useState("")
+    const [ carnetIdentidad, setCarnetIdentidad ] = useState("");
+    const [ email, setEmail ] = useState("");
+    const [ facultadNombre, setFacultadNombre ] = useState("");
+    const [ password, setPassword ] = useState(generarPassword(15));//genera password de 15 caracteres
+    const [ nombreCompleto, setNombreCompleto ] = useState("");
+    const [ userName, setUserName ] = useState("");
+  
+    //ROLES
+    const obtenerRoles = async () => {
+        try {
+          const { data } = await clienteAxios.get("/Rol");
+          //voy a filtar el de profesor xq aun no lo tengo configurado
+          const rolesFiltrados = data?.$values.filter(r => r.name !== "Profesor");
+          setRoles(rolesFiltrados)
+          setMensaje("");
+        } catch (error) {
+          setMensaje("No se han podido obtener los roles. inténtalo más tarde");
         }
-        setCarreras(data.$values);
-        setMensaje("");
-      } catch (error) {
-        console.log(error);
-        setMensaje("No se han podido obtener las carreras. inténtalo más tarde.")
-      } 
-  }
-  const obtenerDepartamentos = async (facultadId) => {
-    try {
-      const { data } = await clienteAxios.get(`/Departamento?FacultadId=${facultadId}`);
-      if(editar) {
-        const departamentoEncontrado = data.$values.find(departa => departa.nombre === departamentoNombre);
-        setDepartamentoId(departamentoEncontrado?.id || data?.$values[0]?.id);
+    }
+    //Obtener facultades
+    const obtenerFacultades = async () => {
+        try {
+          const { data } = await clienteAxios.get("/Facultad/");
+          setFacultades(data.$values);
+        } catch (error) {
+          setMensaje("No se han podido obtener las facultades. inténtalo más tarde");
+        }
       }
-      setDepartamentos(data.$values);
-      setMensaje("");
-    } catch (error) {
-      console.log(error);
-      setMensaje("No se han podido obtener los departamentos. inténtalo más tarde.")
-    } 
-  }
+    //carreras
+      const obtenerCarrearas = async (facultadId) => {
+          try {
+            const { data } = await clienteAxios.get(`/Carrera?FacultadId=${facultadId}`);
+            setCarreras(data.$values);
+            setMensaje("");
+          } catch (error) {
+            //console.log(error);
+            setMensaje("No se han podido obtener las carreras. inténtalo más tarde.")
+          } 
+        }
+        //departamentos
+      const obtenerDepartamentos = async (facultadId) => {
+        try {
+          const { data } = await clienteAxios.get(`/Departamento?FacultadId=${facultadId}`);
+          setDepartamentos(data.$values);
+          setMensaje("");
+        } catch (error) {
+          //console.log(error);
+          setMensaje("No se han podido obtener los departamentos. inténtalo más tarde.")
+        } 
+      }
 
-  const handleValidarCampos = () => {
-    const { nuevosErrores, mensajes } = validarCampos(
-        { 
-          nombreCompleto,
-          nombreUsuario: userName, 
-          carnetIdentidad,
-          password,
-          email
-        });
-
-    if(Object.keys(nuevosErrores).length > 0) {
-      setErrores(nuevosErrores)
-      setMensaje((mensajes.join("\n")));
-      return;
-    }else{
-      setErrores({});
-      setMensaje("");
-    }
-    setMostrarConfirmar(true);
-  }
-  const handleEnviarFormulario = async (passwordAdmin="") => {
-    const usuario = {
-      nombreUsuario: userName,
-      email,
-      password,
-      nombreCompleto,
-      carnetIdentidad,
-      carreraId,
-      facultadId,
-      roles: [rol],
-      departamentoId,
-      passwordAdmin
-    }
-
-    if(editar) {
-      await editarUsuario(usuario);
-    } else { 
-      await crearUsuario(usuario);
-    }
-  }
-  const handleCloseConfirmar = () => {
-    setMostrarConfirmar(false);
-  }
-
-  const crearUsuario = async (usuario) => {
-    try{
-      const { data } = await clienteAxios.post(`/account/registrar/${rol}`, usuario);
-      crearEditarUsuario(data);
-      setMostrarConfirmar(false);
-      setMensaje("Usuario creado exitosamente");
-
-      setTimeout(() => {
+      //todo: MEJORAR ESTO!!!!!
+      const handleValidarCampos = async () => {
+        //validaciones
+        const nuevosErrores = {};
+       if (!validarCarnetIdentidad(carnetIdentidad)) {
+         nuevosErrores.carnetIdentidad = "El carné de identidad no es válido.";
+         setMensaje("El carné de identidad no es válido.")
+        }
+      
+        if (!validarEmail(email)) {
+          nuevosErrores.email = "El correo electrónico no es válido.";
+          setMensaje("El correo electrónico no es válido.");
+        }
+         
+        if (!validarNombreUsuario(userName)) {
+          nuevosErrores.nombreUsuario = "El nombre de usuario no es válido.";
+          setMensaje("El nombre de usuario no es válido.");
+        }
+         
+        if (!validarNombreCompleto(nombreCompleto)) {
+         nuevosErrores.nombreCompleto = "El nombre completo no es válido.";
+         setMensaje("El nombre no es válido.");
+        }
+        if (!validarPassword(password)) {
+          nuevosErrores.password = "La contraseña tiene que tener más de 8 cáracteres.";	
+          setMensaje("El nombre no es válido.");
+         }
+        if (Object.keys(nuevosErrores).length > 0) {
+         setErrores(nuevosErrores);
+         return;
+        }
         setMensaje("");
-        handleCloseModal();
-      }, 1000)
-    } 
-    catch (error) {
-      procesarErrores(error.response.data, setMensaje, setMostrarConfirmar);
+        setErrores({});
+    
+        setMostrarConfirmar(true);
+      }
+
+
+
+    const handleEnviarFormulario = async (passwordAdmin) => {
+        const usuario = {
+            nombreUsuario: userName,
+            email,
+            password,
+            nombreCompleto,
+            carnetIdentidad,
+            carreraId,
+            facultadId,
+            roles: [rol],
+            departamentoId,
+            passwordAdmin
+        }
+        await crearUsuario(usuario);
     }
-  }
-  const editarUsuario = async (usuario) => {
-    try {
-      const { data } = await clienteAxios.patch(`/Usuario/${idUsuario}`,usuario);
-      usuario.id = idUsuario
-      //TODO ARREGLAR LUEGO PUEDE LLEVAR  AlgUN ERROR
-      delete usuario.password
-      usuario.roles.$values = usuario.roles
-      crearEditarUsuario(usuario);
 
-      setMensaje("El usuario se actualizó exitosamente")
-      setTimeout(()=> {
-        setMensaje("")
-        handleCloseModal();
-      }, 1000);
+    const crearUsuario = async (usuario) => {
+        try{
+          const { data } = await clienteAxios.post(`/account/registrar/${rol}`, usuario);
+          agregarUsuario(data);
+          setMostrarConfirmar(false);
+          setMensaje("Usuario creado exitosamente");
+    
+          setTimeout(() => {
+            setMensaje("");
+            handleCloseModal();
+          }, 1000)
+        } 
+        catch (error) {
+          console.log(error.response.data);
+          const errores = error.response.data;
+          const erroresModelo = error.response.data?.errors;
+          const errorMessages = {
+            CarnetIdentidad: "El carné de identidad no es válido.",
+            NombreCompleto: "El nombre no es válido.",
+            Email: "No es un correo válido.",
+            Password: "La contraseña es muy corta."
+          };
+        
+          // Verificar errores del modelo
+          for (const key in erroresModelo) {
+            if (erroresModelo[key]) {
+              setMensaje(errorMessages[key]);
+              break;
+            }
+          }
+        
+          // Verificar otros errores
+          if (errores?.msg?.includes("Username")) {
+            setMensaje("El usuario ya existe.");
+            setMostrarConfirmar(false);
+          } else if (errores?.msg?.includes("Contraseña incorrecta")) {
+            setMensaje("Contraseña incorrecta");
+            
+          } else if(errores?.msg?.includes("Passwords must have at least ")) {
+            setMensaje("La contraseña debe tener al menos un carácter no alfanumérico (por ejemplo, @, #, $, etc.), al menos un dígito (0-9) y al menos una letra mayúscula (A-Z)");
+            setMostrarConfirmar(false);
+          } else {
+            setMostrarConfirmar(false);
+            if(errores?.msg && mensaje == '') setMensaje(errores.msg);
+          }
+    
+          setTimeout(() => {
+            setMensaje("");
+          }, 3000);
+        }
+      }
+    const handleCloseConfirmar = () => {
+        setMostrarConfirmar(false);
     }
-    catch(error){
-      procesarErrores(error.response.data, setMensaje, setMostrarConfirmar);
-    }
-  }  
+    useEffect(()=>{
+        obtenerRoles();
 
-  //obtiene roles y carga los datos del usuario si se esta editando
-  useEffect(()=>{
-    obtenerRoles();
-    if(editar){
-       cargarDatosUsuario();
-    } else {
-      setIsLoading(false);
-    }
-  }, [])
+      }, [])
+    
 
-  //obtiene las facultades si el usuario es un estudiante
-  useEffect(() => {
-    if(!isLoading && rol != "Admin") obtenerFacultades();
-    setFacultadId(0);
-    setDepartamentoId(0);
-    setCarreraId(0);
-  }, [isLoading, rol]);
+      useEffect(() => {
+        if(rol != "Admin") obtenerFacultades();
+      }, [rol]);
+    
+      useEffect(() => {
+        if (facultadId && rol == "Estudiante") obtenerCarrearas(facultadId);
+        if (facultadId && rol == "Encargado" ) obtenerDepartamentos(facultadId);
+      }, [facultadId]);
 
-  useEffect(() => {
-    if (facultadId && rol == "Estudiante") obtenerCarrearas(facultadId);
-    if (facultadId && rol == "Encargado" ) obtenerDepartamentos(facultadId);
-  }, [facultadId]);
+      //TODO: MEJORAR ESTO URGENTE!!!!!!!!!!!!
 
-  
-  return (
+      const validarCarnetIdentidad = (carnet) => {
+        return carnet.length === 11;
+      };
+    
+      const validarEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      };
+    
+      const validarNombreUsuario = (nombreUsuario) => {
+        return nombreUsuario.length >= 4;
+      };
+    
+      const validarNombreCompleto = (nombreCompleto) => {
+        return nombreCompleto.length >= 10; 
+      };
+    
+      const validarPassword = (password) => {
+        return password.length >= 8; 
+      };
+    
+    return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
         {/* Botón de cierre */}
@@ -235,12 +237,12 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
   
         {/* Título */}
         <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
-          {editar ? "Editar" : "Crear"} Usuario
+          Crear Usuario
         </h2>
   
         {/* Formulario */}
         <form
-          className="space-y-6 mb-2"
+          className="space-y-6"
           onSubmit={(e) => {
             e.preventDefault();
             handleValidarCampos();
@@ -319,7 +321,7 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
                 className={`w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 shadow-sm ${errores.password ? "ring-1 ring-red-500" : ""}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required={!editar}
+                required
               />
               {mostrarPassword ? (
                 <LiaEyeSolid
@@ -438,27 +440,26 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
             type="submit"
             className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md"
           >
-            {editar ? "Editar" : "Crear"} Usuario
+            Crear Usuario
           </button>
         </form>
   
-        {mensaje?.split('\n').map((line, index) => (
-          <p key={index} className={`text-center text-sm ${mensaje?.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
-            {line}
-          </p>
-        ))}
+        <p className={`mt-4 text-center text-sm ${mensaje?.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
+          {mensaje}
+        </p>
       </div>
       {mostrarConfirmar && (
         <ConfirmarAccionPassword
           handleCloseModal={handleCloseConfirmar}
           funcionEjecutar={handleEnviarFormulario}
-          mensaje = {(rol =="Admin")? "Necesitamos su contraseña" : `¿Seguro que desea ${editar ? "esditar" : "crear"} el usuario?`}
+          mensaje = {"Necesitamos su contraseña"}
           mensajeError = {mensaje}
           accion = {"Confirmar"}
-          requiredPassword={(rol =="Admin") || editar}
         />
       )}
     </div>
   );
-}  
-export default CrearEditarUsuario;
+  };
+  
+  export default CrearUsuario;
+  

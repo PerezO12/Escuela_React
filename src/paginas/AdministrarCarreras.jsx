@@ -85,9 +85,9 @@ const AdministrarCarreras = () => {
                 mensaje={mensaje}
               />
             </div>
-            <MdDelete className='text-3xl cursor-pointer text-zinc-600 hover:text-red-700 hover:scale-110' 
+{/*             <MdDelete className='text-3xl cursor-pointer text-zinc-600 hover:text-red-700 hover:scale-110' 
               onClick={() => borrarCarrera(carrera.id)} 
-            />
+            /> */}
           </div>
         ))}
       </div>

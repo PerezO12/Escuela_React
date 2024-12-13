@@ -16,7 +16,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
     e.preventDefault();
 
     if (inputType === 'text' && llavePublica.trim() === '') {
-      setMensaje('Por favor, introduce la llave pública.');
+      setMensaje('Por favor, introduce la clave pública.');
       return;
     }
     
@@ -28,7 +28,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
     // Intentar enviar al backend
     try {
       const { data } = await clienteAxios.post('/Encargado/cambiar-llave', { password, llavePublica });
-      setMensaje('Llave pública cambiada exitosamente.');
+      setMensaje('clave pública cambiada exitosamente.');
     } catch (error) {
       console.log(error.response.data)
       console.log(error.response.data)
@@ -72,7 +72,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
           &times;
         </button>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-800 mb-6 sm:mb-8">
-          Cambiar Llave Pública
+          Cambiar clave pública
         </h1>
   
         <form onSubmit={handleCambiarLlavePublica} className="space-y-6">
@@ -106,7 +106,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
               <textarea
                 id="publicKey"
                 rows="3"
-                placeholder="Introduce la llave pública como texto"
+                placeholder="Introduce la clave pública como texto"
                 value={llavePublica}
                 onChange={(e) => setLlavePublica(e.target.value)}
                 className="pl-10 p-4 w-full rounded-lg border border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-300 text-black bg-gray-50 transition duration-300"
@@ -118,7 +118,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
             <div className="relative flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-sky-500 transition duration-300">
               <label htmlFor="file" className="flex flex-col items-center text-gray-600 cursor-pointer">
                 <FiUpload size={32} className="mb-2 text-sky-500" />
-                <span className="text-sm">Subir archivo de llave pública</span>
+                <span className="text-sm">Subir archivo de clave pública</span>
                 <input
                   id="file"
                   type="file"
@@ -163,7 +163,7 @@ const CambiarLlavePublica = ({ closeModal }) => {
             type="submit"
             className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-4 rounded-full shadow-md hover:opacity-90 transition duration-300"
           >
-            Cambiar Llave Pública
+            Cambiar clave pública
           </button>
         </form>
   
