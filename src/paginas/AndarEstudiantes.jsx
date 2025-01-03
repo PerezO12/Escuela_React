@@ -7,46 +7,42 @@ import useAuth from '../hooks/useAuth';
 import useQuery from '../hooks/useQuery';
 
 const AndarEstudiantes = () => {
-  const [ lazyLoading, setLazyLoading ] = useState(false);
-  const [ formularioId, setFormularioId ] = useState('');
+  const [ loading, setLoading ] = useState(false);
   const [ formularios, setFormularios ] = useState([]);
   const [ alerta, setAlerta ] = useState({});
   const { auth } = useAuth();
   const { query } = useQuery(); 
-//  if(cargando)  return(<div>Cargando...</div>);
+
   const navigate = useNavigate();
   
   const cargarDatos = async (query = '') =>{
     try{
-      const { data } = await clienteAxios.get(`/Formulario/estudiantes?${query}`);
+      const data = await cargarDatos(query);
       setFormularios(data.$values);
-      setAlerta({})
+
     } catch(error) {
-      console.log(error);
       setAlerta({
         msg: "En este momento no se pueden cargar los formularios",
         error: true
       })
     }
   };
+
+  //todo: rol arreglar
   useEffect(() => {
     if(auth?.rol != "estudiante") {
         navigate("/");
         return;
     }   
-    setLazyLoading(true)
+    setLoading(true)
   }, [auth])
 
   useEffect( () =>{
-    if(lazyLoading)
-    {
-      cargarDatos(query);
-    }
-  }, [query, lazyLoading])
+    loading && cargarDatos(query);
+  }, [query, loading])
 
 
   const { msg } = alerta
-  //todo esto no es eficient aqui, lo ideal seria una ruta rpotegida
 
   return (
     <>

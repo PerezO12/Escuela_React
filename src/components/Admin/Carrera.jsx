@@ -1,10 +1,10 @@
-import { useState, useEffect} from 'react'
+import { useState} from 'react'
 import formatearFecha from '../../helpers/convertirFechas'
-import clienteAxios from '../../config/clienteAxios'
 import CrearEditarCarrera from './CrearEditarCarrera'
+import PropTypes from 'prop-types';
 
-const Carrera = ( { carrera, editarCarrera, mensaje }) => {
-    const { id, nombre, fechaCreacion, facultad } = carrera;
+const Carrera = ( { carrera, editarCarrera }) => {
+    const { nombre, fechaCreacion, facultad } = carrera;
     const [ mostrarEditar, setMostrarEditar ] = useState(false);
     const handleCloseModal = () => {
         setMostrarEditar(false);
@@ -15,12 +15,7 @@ const Carrera = ( { carrera, editarCarrera, mensaje }) => {
                 <CrearEditarCarrera 
                     handleCloseModal={handleCloseModal} 
                     crearEditarCarrera={editarCarrera} 
-                    editar={true}
-                    id={id}
-                    nombre={nombre}
-                    facultadNombre={facultad}
-                    mensaje={mensaje}
-                    setMostrarEditar={setMostrarEditar}
+                    carrera={carrera}
                 />
             )}
             <div 
@@ -36,5 +31,15 @@ const Carrera = ( { carrera, editarCarrera, mensaje }) => {
         </div>
     )
 }
+
+Carrera.propTypes = {
+    carrera: PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      nombre: PropTypes.string.isRequired,
+      fechaCreacion: PropTypes.string.isRequired,
+      facultad: PropTypes.string.isRequired
+    }).isRequired,
+    editarCarrera: PropTypes.func.isRequired,
+};
 
 export default Carrera

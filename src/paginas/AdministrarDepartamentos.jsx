@@ -1,196 +1,134 @@
-import { useState, useEffect } from 'react';
-import { IoAddOutline } from "react-icons/io5";
-import { MdDelete } from "react-icons/md";
-import clienteAxios from '../config/clienteAxios';
-import useQuery from '../hooks/useQuery'
-import BarraCambiarPagina from '../components/BarraCambiarPagina';
+import { useState, useEffect, useCallback } from 'react';
+
 import CrearEditarDepartamento from '../components/Admin/CrearEditarDepartamento';
 import Departamento from '../components/Admin/Departamento';
-
-import ConfirmarAccionPassword from '../components/Admin/ConfirmarAccionPassword';
+import ConfirmarAccionPassword from '../components/ConfirmarAccionPassword';
+import { errorMapper } from '../helpers/errorMapper';
+import { borrarDepartamento, cargarDepartamentos } from '../api/administrador';
+import Alerta from '../components/Alerta';
+import ListaColumnasOrdenar from '../components/ListaColumnasOrdenar';
+import ListaGenerica from '../components/ListaGenerica';
+import useBusquedaYEstado from '../hooks/useBusquedaYestado';
 
 const AdministrarDepartamentos = () => {
-  const [pagina, setPagina] = useState(1);
+
   const [departamentos, setDepartamentos] = useState([]);
-  const [ idDepartamento, setIdDepartamento ] = useState([]);
-  const [ mostrarConfirmar, setMostrarConfirmar] = useState(false);
+  const [ departamentoId, setDepartamentoId ] = useState(0);
+  const {
+    mostrarConfirmar,
+    setMostrarConfirmar,
+    mostrarFormulario,
+    setMostrarFormulario,
+    mensaje,
+    setMensaje,
+    error,
+    setError,
+    handleOrdenarPor,
+    handleActualizarPagina,
+    handleCloseConfirmar,
+    generarQueryCompleto,
+  } = useBusquedaYEstado();
 
-  const [flechaActiva, setFlechaActiva] = useState(true);
-  const [ordenar, setOrdenar] = useState("Fecha");
-  const [descender, setDescender] = useState(false);
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [mensaje, setMensaje] = useState('');
+  const queryCompleto = generarQueryCompleto();
 
-  const { query } = useQuery();
-  const queryCompleto = `?${query}OrdenarPor=${ordenar}&NumeroPagina=${pagina}&Descender=${descender}&`;
-
-  const cargarDatos = async (queryCompleto='') => {
+  const cargarDatos = useCallback (async () => {
     try {
-      const { data } = await clienteAxios.get(`/Departamento${queryCompleto}`);
-      setFlechaActiva(data.$values.length >= 10);
-      setDepartamentos(data.$values); 
+      const data = await cargarDepartamentos(queryCompleto);
+      setDepartamentos(data);
+      setError(""); 
     } catch (error) {
-      console.log(error);
+      setError(errorMapper(error)?.values || "Error desconocido");
     }
-  };
+  }, [queryCompleto, setError]);
 
-  const borrarDepartamento = async (password) => {
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos]);
+
+  const handleBorrarDepartamento = async (password) => {
     try {
-      const { data } = await clienteAxios.delete(`/Departamento/${idDepartamento}`, {
-        data: { password } 
-      });
-      setDepartamentos(departamentos.filter(dep => dep.id !== idDepartamento)); 
-      setMensaje('Departmaento borrado exitosamente.');
+      await borrarDepartamento(password, departamentoId);
+      setDepartamentos(departamentos.filter(dep => dep.id !== departamentoId)); 
+      setMensaje('Departamento borrado exitosamente.');
       setTimeout(() => {
         setMostrarConfirmar(false);
         setMensaje("");
       }, 800);
     } catch (error) {
-      console.log(error.response.data);
-      setMensaje(error.response.data?.msg || "Ocurrio un error al eliminar el departamento.");
+      setMensaje( errorMapper(error)?.values);
+      setTimeout(() => setMensaje(""), 5000);
     }
   };
 
-
-  const EditarDepartamento = async (nombre, id, facultadId) => {
-    try {
-      const { data } = await clienteAxios.put(`/Departamento/${id}`, { nombre, facultadId });
-
+  const handleEditarDepartamento = (data) => {
       setDepartamentos(departamentos.map(dep => dep.id === data.id ? { ...dep, nombre: data.nombre, facultad: data.facultad } : dep));
-
-    } catch (error) {
-      console.log(error);
-      setMensaje(error.response.data.errors.Nombre);
-    }
   };
 
-  const crearDepartamento = async (nombre, facultadId) => {
-    try {
-      const { data } = await clienteAxios.post(`/Departamento`, { nombre, facultadId });
-      setDepartamentos([...departamentos, data]);
-      setMensaje('Departmaento creado exitosamente.');
-      setTimeout(() => {
-        setMostrarFormulario(false);
-        setMensaje("");
-      }, 800);
-    } catch (error) {
-      setMensaje(error.response.data.errors.Nombre);
-    }
+  const handleCrearDepartamento = (data) => {
+    setDepartamentos([...departamentos, data]);
   };
 
   const handleCloseModal = () => {
     setMostrarFormulario(false);
   };
-  const handleOrdenarPor = (ordenarPor) => {
-      if(ordenar == ordenarPor){
-          setDescender(!descender);
-      }
-      setOrdenar(ordenarPor);
-  }
-  const handleCambiarPagina = (a) => {
-    if (pagina + a <= 0) {
-      return;
-    }
-    setPagina(pagina + a);
-  };
-  const handleCloseConfirmar = () => {
-    setMostrarConfirmar(false);
-    setMensaje("");
-  }
 
-  useEffect(() => {
-    cargarDatos(queryCompleto);
-  }, [pagina, ordenar, descender]);
+  const handleDelete = (id) => {
+    setDepartamentoId(id);
+    setMostrarConfirmar(true)
+  };
+
 
   return (
     <div className='md:px-10 lg:px-0 px-4'>
-      <div className="grid grid-cols-4 lg:gap-16 px-4 py-2 ">
-        <p 
-          className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
-          onClick={() => handleOrdenarPor("Nombre")}
-        >
-          Departamentos
-        </p>
-        <p 
-          className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
-          onClick={() => handleOrdenarPor("Encargado")}
-        >
-          Encargados
-        </p>
-        <p 
-          className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
-          onClick={() => handleOrdenarPor("Facultad")}
-        >
-          Facultades
-        </p>
-        <p 
-          className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
-          onClick={() => handleOrdenarPor("Fecha")}
-        >
-          Fecha de creación
-        </p>
-      </div>
+      {/* Lista Columnas Ordenar */}
+      <ListaColumnasOrdenar
+        handleOrdenarPor={handleOrdenarPor}
+        columnas={[
+          { ordenar: "Nombre", titulo: "Departamentos" },
+          { ordenar: "Encargado", titulo: "Encargados" },
+          { ordenar: "Facultad", titulo: "Facultades" },
+          { ordenar: "Fecha", titulo: "Fecha de creación" }
+        ]}
+      />
       <hr />
-      
+
+      {/* Errores */}
+      {error && <Alerta msg={error} />}
+
       {/* Mostrar Departamentos */}
-      <div className="lg:h-[450px] h-[400px] px-2 py-2 bg-gray-100 overflow-y-auto">
-        {departamentos.map(departamento => (
-          <div key={departamento.id} className="flex justify-between bg-white items-center border shadow-lg rounded-lg">
-            <div className="flex-grow">
-              <Departamento
-                departamento={departamento}
-                EditarDepartamento={EditarDepartamento}
-                mensaje={mensaje}
-              />
-            </div>
-            <MdDelete 
-              className='text-3xl cursor-pointer text-zinc-600 hover:text-red-700 hover:scale-110' 
-              onClick={() => {
-                setIdDepartamento(departamento.id);
-                setMostrarConfirmar(true);
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-end mb-2 lg:mr-10">
-        <div 
-          className="bg-blue-600 transition duration-200 text-white rounded-full p-3 shadow-2xl border hover:bg-blue-700 hover:scale-105"
-          onClick={() => setMostrarFormulario(true)}
-          >
-          <IoAddOutline className="text-3xl"/>
-        </div>
-      </div>
-
-      {/* Barra Cambiar Pagina */}
-      <BarraCambiarPagina   
-        handleCambiarPagina={handleCambiarPagina} 
-        flechaActiva={flechaActiva} 
-        pagina={pagina} 
+      <ListaGenerica
+        elementos={departamentos}
+        renderItem={(departamento) => (
+          <Departamento
+            departamento={departamento}
+            editarDepartamento={handleEditarDepartamento}
+          />
+        )}
+        onDelete={handleDelete}
+        handleCambiarPagina={handleActualizarPagina}
+        setMostrarFormulario={setMostrarFormulario}
       />
 
       {/* Mostrar formulario para crear departamento */}
       {mostrarFormulario && (
         <CrearEditarDepartamento
-          crearEditarDepartamento={crearDepartamento}
+          crearEditarDepartamento={handleCrearDepartamento}
           handleCloseModal={handleCloseModal}
           editar={false}
-          mensaje={mensaje}
         />
       )}
+
       {/*Mostrar la confirmacion del eliminar */}
       {mostrarConfirmar &&(
         <ConfirmarAccionPassword
           handleCloseModal={handleCloseConfirmar}
-          funcionEjecutar={borrarDepartamento}
+          funcionEjecutar={handleBorrarDepartamento}
           mensaje = {"¿Seguro que desea eliminar el departamento?"}
           mensajeError = {mensaje} 
           alerta = {"Tenga en cuenta que si elimina el departamento tambien se eliminara el encargado."}
         />
       )}
     </div>
-    
   );
 };
 

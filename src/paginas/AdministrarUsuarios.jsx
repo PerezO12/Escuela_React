@@ -29,6 +29,7 @@ const AdministrarUsuarios = () => {
   const cargarDatos = async (queryCompleto='') => {
     try {
       const { data } = await clienteAxios.get(`/Usuario${queryCompleto}`);
+      console.log(`/Usuario${queryCompleto}`)
       setFlechaActiva(data.$values.length >= 10);
       setUsuarios(data.$values); 
     } catch (error) {

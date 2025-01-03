@@ -8,16 +8,23 @@ import Sidebar from "../components/Sidebar";
 import clienteAxios from "../config/clienteAxios";
 import { QueryProvider } from "../context/QueryProvider";
 import SidebarAdmin from "../components/Admin/SidebarAdmin";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const RutaProtegida = () => {
 
     const { auth, cargando } = useAuth();
     const [ mostrarSidebar, setMostrarSidebar ] = useState(false);
 
-    if(cargando) return 'Cargando';
+    /* useEffect(() => {
+      if (auth?.token) {
+          clienteAxios.defaults.headers['Authorization'] = `Bearer ${auth.token}`;
+      }
+    }, [auth]); */
+
+    if (cargando) return <LoadingSpinner />;
     //para q se actualice el token al iniciar seccion luego d haberlo destruido
-    const token = localStorage.getItem('token');
-    clienteAxios.defaults.headers['Authorization'] = `Bearer ${token}`
+/*     const token = localStorage.getItem('token');
+    clienteAxios.defaults.headers['Authorization'] = `Bearer ${token}` */
 
   return (
     <>

@@ -67,7 +67,7 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
                 </p>
                 )}
                 
-                <p className="font-bold mb-3 text-gray-700 uppercase">Fecha Creado: {""}
+                <p className="font-bold mb-3 text-gray-700 uppercase">Creado: {""}
                     <span className="font-normal normal-case">{ formatearFecha(fechacreacion) }</span>
                 </p>
                 {isEditing

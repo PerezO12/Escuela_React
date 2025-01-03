@@ -1,56 +1,57 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 
-
-import AuthLayout from './layouts/AuthLayout';
-import Login from './paginas/Login';
+// Context
 import { AuthProvider } from './context/AuthProvider';
-import RutaProtegida from './layouts/RutaProtegida';
-import AndarEstudiantes from './paginas/AndarEstudiantes';
-import CrearFormulario from './paginas/CrearFormulario';
-import AndarEncargados from './paginas/AndarEncargados';
-import AdministrarCarreras from './paginas/AdministrarCarreras';
-import AdministrarDepartamentos from './paginas/AdministrarDepartamentos';
-import AdministrarFacultades from './paginas/AdministrarFacultades';
-import AdministrarFormularios from './paginas/AdministrarFormularios';
-import AdministrarUsuarios from './paginas/AdministrarUsuarios';
 
+// Layouts
+const AuthLayout = lazy(() => import('./layouts/AuthLayout'));
+const RutaProtegida = lazy(() => import('./layouts/RutaProtegida'));
 
+// Páginas
+const Login = lazy(() => import('./paginas/Login'));
+const AndarEstudiantes = lazy(() => import('./paginas/AndarEstudiantes'));
+const CrearFormulario = lazy(() => import('./paginas/CrearFormulario'));
+const AndarEncargados = lazy(() => import('./paginas/AndarEncargados'));
+const AdministrarCarreras = lazy(() => import('./paginas/AdministrarCarreras'));
+const AdministrarDepartamentos = lazy(() => import('./paginas/AdministrarDepartamentos'));
+const AdministrarFacultades = lazy(() => import('./paginas/AdministrarFacultades'));
+const AdministrarFormularios = lazy(() => import('./paginas/AdministrarFormularios'));
+const AdministrarUsuarios = lazy(() => import('./paginas/AdministrarUsuarios'));
 
 function App() {
-  // Inicializa el estado con el valor almacenado en localStorage
-  
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          {/* Pondre de momento las urtas no protegidas */}
-          <Route path='/' element={<AuthLayout/>}>
-            <Route index element={<Login />} />
+        {/* Suspense envuelve las rutas para mostrar un fallback mientras se cargan */}
+        <Suspense fallback={<div>Cargando...</div>}>
+          <Routes>
+            {/* Rutas públicas */}
+            <Route path='/' element={<AuthLayout />}>
+              <Route index element={<Login />} />
+            </Route>
 
-          </Route>
-        
-          <Route path='/estudiante' element={ <RutaProtegida />}>
-            <Route index element={<AndarEstudiantes />}/>
-            <Route path='crear-formulario' element={<CrearFormulario />} />
-          </Route>
+            {/* Rutas para estudiantes */}
+            <Route path='/estudiante' element={<RutaProtegida />}>
+              <Route index element={<AndarEstudiantes />} />
+              <Route path='crear-formulario' element={<CrearFormulario />} />
+            </Route>
 
-          {"Rutas para encargados"}
-          <Route path='/encargado' element={ <RutaProtegida />}>
-            <Route index element={<AndarEncargados firmados={false}/>}/>
-            {/* <Route path='historial' element={<AndarEncargados firmados={true}/>} /> */}
-          </Route>
+            {/* Rutas para encargados */}
+            <Route path='/encargado' element={<RutaProtegida />}>
+              <Route index element={<AndarEncargados firmados={false} />} />
+            </Route>
 
-          {"Rutas para Administrador"}
-          
-          <Route path='/admin' element={ <RutaProtegida />}>
-            <Route index element={<AdministrarUsuarios />} />
-            <Route path='departamentos' element={<AdministrarDepartamentos />} />
-            <Route path='facultades' element={<AdministrarFacultades />} />
-            <Route path='formularios' element={<AdministrarFormularios />} />
-            <Route path='carreras' element={<AdministrarCarreras />} />
-          </Route>
-
-        </Routes>
+            {/* Rutas para administrador */}
+            <Route path='/admin' element={<RutaProtegida />}>
+              <Route index element={<AdministrarUsuarios />} />
+              <Route path='departamentos' element={<AdministrarDepartamentos />} />
+              <Route path='facultades' element={<AdministrarFacultades />} />
+              <Route path='formularios' element={<AdministrarFormularios />} />
+              <Route path='carreras' element={<AdministrarCarreras />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </AuthProvider>
     </BrowserRouter>
   );

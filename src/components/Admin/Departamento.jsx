@@ -1,27 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import formatearFecha from '../../helpers/convertirFechas';
-import clienteAxios from '../../config/clienteAxios';
 import CrearEditarDepartamento from './CrearEditarDepartamento';
+import PropTypes from 'prop-types';
 
-const Departamento = ({ departamento, EditarDepartamento, mensaje }) => {
+const Departamento = ({ departamento, editarDepartamento }) => {
   const { id, nombre, fechaCreacion, facultad, encargadoNombre } = departamento;
   const [ mostrarEditar, setMostrarEditar ] = useState(false);
   const handleCloseModal = () => {
     setMostrarEditar(false);
   };
+  
 
   return (
     <div>
       {mostrarEditar && (
         <CrearEditarDepartamento 
           handleCloseModal={handleCloseModal} 
-          crearEditarDepartamento={EditarDepartamento} 
+          crearEditarDepartamento={editarDepartamento} 
           editar={true}
           id={id}
           nombre={nombre}
           facultadNombre={facultad}
-          mensaje={mensaje}
-          setMostrarEditar={setMostrarEditar}
         />
       )}
       <div 
@@ -38,5 +37,16 @@ const Departamento = ({ departamento, EditarDepartamento, mensaje }) => {
     </div>
   );
 }
+
+Departamento.propTypes = {
+  editarDepartamento: PropTypes.func.isRequired, 
+  departamento: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, 
+    nombre: PropTypes.string.isRequired,
+    fechaCreacion: PropTypes.string.isRequired, 
+    facultad: PropTypes.string.isRequired, 
+    encargadoNombre: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default Departamento;

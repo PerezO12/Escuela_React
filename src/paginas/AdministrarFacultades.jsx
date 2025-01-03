@@ -1,141 +1,121 @@
-import { useState, useEffect } from 'react';
-import { IoAddOutline } from "react-icons/io5";
+import { useState, useEffect, useCallback } from 'react';
 
-import { MdDelete } from "react-icons/md";
-import clienteAxios from '../config/clienteAxios';
-import BarraCambiarPagina from '../components/BarraCambiarPagina';
-import useQuery from "../hooks/useQuery";
 import Facultades from "../components/Facultades"
 import CrearEditarFacultad from '../components/Admin/CrearEditarFacultad';
-import ConfirmarAccionPassword from '../components/Admin/ConfirmarAccionPassword';
+import { borrarFacultad, cargarFacultades } from '../api/administrador';
+import { errorMapper } from '../helpers/errorMapper';
+import Alerta from '../components/Alerta';
+import ConfirmarAccionPassword from '../components/ConfirmarAccionPassword';
+import useBusquedaYEstado from '../hooks/useBusquedaYestado';
+import ListaColumnasOrdenar from '../components/ListaColumnasOrdenar';
+import ListaGenerica from '../components/ListaGenerica';
 
 const AdministrarFacultades = () => {
-  const [idUserBorrar, setIdUserBorrar] = useState("");
-  const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
-
-  const [pagina, setPagina] = useState(1);
   const [facultades, setFacultades] = useState([]);
-  const [flechaActiva, setFlechaActiva] = useState(true);
-  const [ordenar, setOrdenar] = useState("Fecha");
-  const [descender, setDescender] = useState(false);
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [mensaje, setMensaje] = useState('');
+  const [ facultadId, setFacultadId ] = useState([]);
+  const {
+    mostrarConfirmar,
+    setMostrarConfirmar,
+    mostrarFormulario,
+    setMostrarFormulario,
+    mensaje,
+    setMensaje,
+    error,
+    setError,
+    handleOrdenarPor,
+    handleActualizarPagina,
+    handleCloseConfirmar,
+    generarQueryCompleto,
+  } = useBusquedaYEstado();
 
-  const { query } = useQuery();
-  const queryCompleto = `?${query}OrdenarPor=${ordenar}&NumeroPagina=${pagina}&Descender=${descender}&`;
+  const queryCompleto = generarQueryCompleto();
 
-  const cargarDatos = async (queryCompleto = "") => {
+  const cargarDatos = useCallback(async () => {
     try {
-      const { data } = await clienteAxios.get(`/Facultad${queryCompleto}`);
-      if (data.$values.length <= 10) {
-        setFlechaActiva(false);
-      } else {
-        setFlechaActiva(true);
-      }
-      setFacultades(data.$values); 
+      const data = await cargarFacultades(queryCompleto);
+      setFacultades(data); 
+      setError("");
     } catch (error) {
-      console.log(error);
+      setError(errorMapper(error)?.values);
     }
-  };
+  }, [queryCompleto, setError]);
 
-  const EditarFacultad = async ( nombre, id ) =>{
-    try{
-      const { data } = await clienteAxios.put(`/Facultad/${id}`, {nombre});
-      setFacultades(facultades.map( facultad => facultad.id === data.id ? { ...facultad, nombre: data.nombre } : facultad))
-    } catch(error){
-      console.log(error);
-      setMensaje(error.response.data.errors.Nombre);
-    }
-  }
-  
   useEffect(()=>{
-    cargarDatos()
-  }, []);
+    cargarDatos();
+  }, [cargarDatos]);
 
-  const crearFacultad = async (nombre) => {
+  const handleBorrarFacultad = async (password) => {
     try {
-      const { data } = await clienteAxios.post(`/Facultad`, { nombre });
-      setFacultades([...facultades, data]); 
-      setMostrarFormulario(false);
-      setMensaje('');
+      await borrarFacultad(facultadId, password);
+      setFacultades(facultades.filter(fac => fac.id !== facultadId)); 
+      setMensaje('Facultad borrada exitosamente.');
+      setTimeout(() => {
+        setMostrarConfirmar(false);
+        setMensaje("");
+      }, 600);
     } catch (error) {
-      setMensaje(error.response.data.errors.Nombre);
+      setMensaje( errorMapper(error)?.values);
+      setTimeout(() => setMensaje(""), 5000);
     }
   };
-
-  const handleCloseModal = () => {
-    setMostrarFormulario(false);
-  };
-  const handleCloseConfirmar = () => {
-    setMensaje("");
-    setMostrarConfirmar(false);
+  
+  const handleEditarFacultad = async (data) =>{
+      setFacultades(facultades.map( fac => fac.id === data.id ? { ...fac, nombre: data.nombre } : fac))
   }
 
-  const handleCambiarPagina = (a) => {
-    if (pagina + a <= 0) {
-      return;
-    }
-    setPagina(pagina + a);
+  const handleCrearFacultad = async (data) => {
+    setFacultades([...facultades, data]); 
   };
+
+  const handleDelete = (id) => {
+    setFacultadId(id);
+    setMostrarConfirmar(true);
+  };
+  
 
   return (
     <div className='md:px-10 lg:px-0 px-4'>
-      <div className="grid grid-cols-2 lg:gap-80 px-4 py-2">
-        <p 
-          className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
-          onClick={() => handleOrdenarPor("Nombre")}
-        >
-          Facultades
-        </p>
-        <div className='flex justify-between'>
-          <p 
-            className="text-blue-800 font-serif hover:text-blue-600 lg:text-lg text-sm hover:cursor-pointer"
-            onClick={() => handleOrdenarPor("Fecha")}
-          >
-            Fecha de creación
-          </p>
-        </div>
-      </div>
+      <ListaColumnasOrdenar 
+        handleOrdenarPor={handleOrdenarPor} 
+        columnas={[
+          { ordenar: "Nombre", titulo: "Facultades" },
+          { ordenar: "Fecha", titulo: "Fecha de creación" },
+        ]} 
+      />
       <hr />
+      {/* Errores */}
+      {error && <Alerta msg={error} />}
 
       {/*Mostrar Facultades */}
-      <div className=" lg:h-[450px]  h-[400px] px-2 py-2 bg-gray-100 overflow-y-auto">
-        {facultades.map(facultad => (
-          <div key={facultad.id}className="flex justify-between bg-white items-center border shadow-lg rounded-lg">
-            <div className="flex-grow   ">
-              <Facultades 
-                facultad={facultad}
-                EditarFacultad={EditarFacultad}
-                mensaje={mensaje}
-                />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-end mb-2 lg:mr-10">
-        <div 
-          className="bg-blue-600 transition duration-200 text-white rounded-full p-3 shadow-2xl border hover:bg-blue-700 hover:scale-105"
-          onClick={() => setMostrarFormulario(true)}
-          >
-          <IoAddOutline className="text-3xl"/> 
-        </div>
-      </div>
-        {/* Barra Cambiar Pagina*/}
-          <BarraCambiarPagina   
-            handleCambiarPagina={handleCambiarPagina} 
-            flechaActiva={flechaActiva} 
-            pagina={pagina} 
+      <ListaGenerica
+        elementos={facultades}
+        renderItem={(fac) => (
+          <Facultades
+            facultad={fac}
+            editarFacultad={handleEditarFacultad}
           />
-
-
+        )}
+        onDelete={handleDelete}
+        handleCambiarPagina={handleActualizarPagina}
+        setMostrarFormulario={setMostrarFormulario}
+      />
+      
       {/* Mostrar fromulario para crear facultad */}
       {mostrarFormulario && (
         <CrearEditarFacultad
-          crearEditarFacultad={crearFacultad}
-          handleCloseModal={handleCloseModal}
-          editar={false}
-          mensaje={mensaje}
+          crearEditarFacultad={handleCrearFacultad}
+          handleCloseModal={() => setMostrarFormulario(false)}
+        />
+      )}
+
+      {/*Mostrar la confirmacion del eliminar */}
+      {mostrarConfirmar &&(
+        <ConfirmarAccionPassword
+          handleCloseModal={handleCloseConfirmar}
+          funcionEjecutar={handleBorrarFacultad}
+          mensaje = {"¿Seguro que desea eliminar la facultad?"}
+          mensajeError = {mensaje} 
+          alerta = {"Tenga en cuenta que si elimina la facultad también se eliminaran los departamentos y encargados."}
         />
       )}
     </div>

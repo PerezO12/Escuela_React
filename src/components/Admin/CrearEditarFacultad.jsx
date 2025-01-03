@@ -1,5 +1,54 @@
+import { useState } from "react";
+import PropTypes from "prop-types";
 
-const CrearEditarFacultad = ( {handleCloseModal, crearEditarFacultad, editar=false, setMostrarEditar,id, nombre , mensaje=""} ) => {
+import { crearFacultad, editarFacultad } from "../../api/administrador";
+import { errorMapper } from "../../helpers/errorMapper";
+
+
+const CrearEditarFacultad = ( {handleCloseModal, crearEditarFacultad, id, nombre, editar = false} ) => {
+  const [mensaje, setMensaje] = useState("");
+  
+  const handleEditarFacultad = async ( id,  nombre ) =>{
+    try{
+      const data = await editarFacultad(id, nombre);
+      crearEditarFacultad(data);
+
+      setMensaje('Facultad editada exitosamente.');
+      setTimeout(() => {
+        handleCloseModal();
+        setMensaje("");
+      }, 600);
+    } catch(error){
+      setMensaje( errorMapper(error)?.values);
+      setTimeout(() => setMensaje(""), 5000);
+    }
+  }
+  
+
+  const handleCrearFacultad = async (nombre) => {
+    try {
+      const data = await crearFacultad(nombre);
+      crearEditarFacultad(data);
+      setMensaje('Facultad creada exitosamente.');
+
+      setTimeout(() => {
+        handleCloseModal();
+        setMensaje("");
+      }, 600);
+
+    } catch (error) {
+      setMensaje( errorMapper(error)?.values);
+      setTimeout(() => setMensaje(""), 5000);
+    }
+  };
+  const handleCrearEditar = (e) => {
+    e.preventDefault();
+
+    editar 
+      ? handleEditarFacultad(id, e.target.nombre.value)
+      : handleCrearFacultad(e.target.nombre.value);
+  }
+  
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-lg relative">
@@ -19,7 +68,7 @@ const CrearEditarFacultad = ( {handleCloseModal, crearEditarFacultad, editar=fal
             {/* Formulario */}
             <form 
               className="space-y-6" 
-              onSubmit={(e) => { e.preventDefault(); (editar ? (crearEditarFacultad(e.target.nombre.value, id), setMostrarEditar(false)) : crearEditarFacultad(e.target.nombre.value)); }}
+              onSubmit={handleCrearEditar}
               >
               <div>
                 <label htmlFor="nombre" className="block text-lg font-medium text-gray-700 mb-2">
@@ -50,5 +99,21 @@ const CrearEditarFacultad = ( {handleCloseModal, crearEditarFacultad, editar=fal
         </div>
   )
 }
+
+CrearEditarFacultad.propTypes = {
+  handleCloseModal: PropTypes.func.isRequired, 
+  crearEditarFacultad: PropTypes.func.isRequired, 
+  id: (props, propName, componentName) => {
+    if (props.editar && !props[propName]) {
+      return new Error(`La propiedad '${propName}' es obligatoria cuando 'editar' es true en ${componentName}`);
+    }
+  },
+  nombre: (props, propName, componentName) => {
+    if (props.editar && !props[propName]) {
+      return new Error(`La propiedad '${propName}' es obligatoria cuando 'editar' es true en ${componentName}`);
+    }
+  },
+  editar: PropTypes.bool,
+};
 
 export default CrearEditarFacultad

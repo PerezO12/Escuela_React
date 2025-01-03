@@ -1,35 +1,69 @@
-import { useState, useEffect } from 'react';
-import clienteAxios from '../../config/clienteAxios';
+import { useState, useEffect, useCallback } from 'react';
+import { cargarFacultades, crearCarrera, editarCarrera } from '../../api/administrador';
+import Mensaje from '../Mensaje';
+import FacultadesSelector from '../FacultadesSelector';
+import NombreEditeInput from '../FormInput/NombreEditeInput';
+import { errorMapper } from '../../helpers/errorMapper';
+import PropTypes from 'prop-types';
 
-const CrearEditarCarrera = ({ handleCloseModal, crearEditarCarrera, editar = false, setMostrarEditar, id, nombre, facultadNombre, mensaje = "" }) => {
+const CrearEditarCarrera = ({ 
+  handleCloseModal,
+  crearEditarCarrera,
+  carrera = {}
+}) => {
     const [facultades, setFacultades] = useState([]);
+    const [facultadId, setFacultadId] = useState(0);
+    const [nombreCarrera, setNombreCarrera ] = useState(carrera.nombre || "");
+    const [mensaje, setMensaje] = useState("");
+    const editar = carrera && carrera.id;
 
-    const ObtenerFacultades = async () => {
-        try {
-          const { data } = await clienteAxios.get("/Facultad/");
-          if(editar) {
-            const facultadEncontrada = data.$values.find(fac => fac.nombre === facultadNombre);
-            if (facultadEncontrada) {
-              const facultadesActualizadas = [
-                facultadEncontrada, 
-                ...data.$values.filter(f => f.nombre !== facultadNombre)
-              ];
-              setFacultades(facultadesActualizadas);
-            }
-            else{
-              setFacultades(data.$values);
-            }
-          } else {
-            setFacultades(data.$values);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-    }
+    const ObtenerFacultades = useCallback(async () => {
+      try {
+        const data = await cargarFacultades();
+        if(editar) {
+          const facultadEncontrada = data.find(fac => fac.nombre === carrera.facultad);
+          setFacultadId(facultadEncontrada?.id || 0);
+        } 
+        setFacultades(data);
+        setMensaje("");
+      } catch (error) {
+        setMensaje(errorMapper(error)?.values)
+      }
+    }, [editar, carrera?.facultad]);
 
     useEffect(() => {
-        ObtenerFacultades();
-    }, []);
+      ObtenerFacultades();
+    }, [ObtenerFacultades]);
+
+    const handleEditarCarrera = async (id, nombre, facultadId) => {
+        try {
+          const data = await editarCarrera(id, {nombre, facultadId})
+          crearEditarCarrera(data);
+          handleCloseModal();
+        } catch (error) {
+          setMensaje(errorMapper(error)?.values)
+          setTimeout(() => setMensaje(""), 5000);
+        }
+      };
+    
+      const handleCrearCarrera = async (nombre, facultadId) => {
+        try {
+          const data = await crearCarrera({nombre, facultadId})
+          crearEditarCarrera(data);
+          handleCloseModal();
+        } catch (error) {
+          setMensaje(errorMapper(error)?.values)
+          setTimeout(() => setMensaje(""), 5000);
+        }
+      };
+
+
+  const handleCrearEditar = async (e) => {
+    e.preventDefault();
+    editar
+      ? handleEditarCarrera(carrera.id, nombreCarrera, facultadId)
+      : handleCrearCarrera(nombreCarrera, facultadId)
+  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
@@ -42,51 +76,40 @@ const CrearEditarCarrera = ({ handleCloseModal, crearEditarCarrera, editar = fal
         </h2>
         <form
           className="space-y-6"
-          onSubmit={(e) => {
-            e.preventDefault();
-            editar
-              ? (crearEditarCarrera(e.target.nombre.value, id, e.target.facultad.value), setMostrarEditar(false))
-              : crearEditarCarrera(e.target.nombre.value, e.target.facultad.value);
-          }}
+          onSubmit={handleCrearEditar}
         >
-          <div>
-            <label htmlFor="nombre" className="block text-lg font-medium text-gray-700 mb-2">Nombre:</label>
-            <input
-              id="nombre"
-              type="text"
-              placeholder="Ingrese el nombre de la carrera"
-              className="w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 shadow-sm"
-              defaultValue={editar ? nombre : ""}
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="facultad" className="block text-lg font-medium text-gray-700 mb-2">Facultad:</label>
-            <select
-              id="facultad"
-              className="w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 shadow-sm"
-              defaultValue={editar ? facultades[0]?.id : ""}
-              required
-            >
-              <option value="" disabled>Seleccione una facultad</option>
-              {facultades.map((fac) => (
-                <option key={fac.id} value={fac.id}>{fac.nombre}</option>
-              ))}
-            </select>
-          </div>
-
+          <NombreEditeInput
+            value={nombreCarrera}
+            onChange={e => setNombreCarrera(e.target.value)}
+            placeholder={"Ingrese el nombre de la carrera"}
+          />
+          <FacultadesSelector
+            facultades={facultades}
+            editar={editar}
+            value ={facultadId}
+            onChange = {e => setFacultadId(e.target.value)}
+          />
+  
           <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
             {editar ? "Editar" : "Crear"} Carrera
           </button>
         </form>
 
-        <p className={`mt-4 text-center text-sm ${mensaje.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
-          {mensaje}
-        </p>
+        <Mensaje  msg = {mensaje}/>
       </div>
     </div>
   );
 };
+
+CrearEditarCarrera.propTypes = {
+  handleCloseModal: PropTypes.func.isRequired,
+  crearEditarCarrera: PropTypes.func.isRequired,
+  carrera: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombre: PropTypes.string,
+    facultadNombre: PropTypes.string
+  })
+};
+
 
 export default CrearEditarCarrera;

@@ -234,9 +234,14 @@ const CrearEditarUsuario = ({ handleCloseModal, crearEditarUsuario, editar = fal
         </button>
   
         {/* Título */}
-        <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
+        <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-6">
           {editar ? "Editar" : "Crear"} Usuario
         </h2>
+        {mensaje?.split('\n').map((line, index) => (
+          <p key={index} className={`text-center text-sm ${mensaje?.includes('exitosamente') ? 'text-green-500' : 'text-red-500'} mb-2`}>
+            {line}
+          </p>
+        ))}
   
         {/* Formulario */}
         <form

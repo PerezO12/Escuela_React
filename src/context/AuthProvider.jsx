@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import clienteAxios from '../config/clienteAxios';
+import { cargarDatosUsuario } from "../api/auth";
 
 
 const AuthContext = createContext(); 
@@ -24,17 +25,11 @@ const AuthProvider = ({children}) => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            //TODO: Faltan arreglar estas cosas y comprobar...Aqui puedo hacer las redirecciones
             try {
-                 
-                const { data } = await clienteAxios.get('/account/obtener-perfil', config);
-                data.rol = data.rol.toLowerCase();
-
+                const data = await cargarDatosUsuario(config);
+                data.roles = data.roles.$values.map(r => r.toLowerCase());
+                data.rol = data.roles[0];//todo: esto es temporal hasta ver como manear si un solo rol o varios
                 setAuth(data);
-                //Redirecciones
-/*                 if(data.rol == 'admin') navigate('admin');
-                if(data.rol == 'encargado') navigate('encargado');
-                if(data.rol == 'estudiante') navigate('estudiante'); */
             } catch(error) {
                 setAuth({});
                 console.log(error);

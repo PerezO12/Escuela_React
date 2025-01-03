@@ -1,13 +1,22 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react'
 import { FiAlertTriangle, FiLock } from 'react-icons/fi';
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
+import Mensaje from './Mensaje';
 
 
-const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, mensajeError, accion="Eliminar", alerta="", requiredPassword=true }) => {
+const ConfirmarAccionPassword = ({ 
+    funcionEjecutar, 
+    handleCloseModal, 
+    mensaje, 
+    mensajeError, 
+    accion="Eliminar", 
+    alerta="", 
+    requiredPassword=true 
+}) => {
     const [ password , setPassword ] = useState("");
     const [ mostrarPassword, setMostrarPassword ] = useState(false);
     const [ mostrarAdvertencia, setMostrarAdvertencia ] = useState(true);
-
     let color = (accion=="Eliminar")?("bg-red-600 hover:bg-red-700"): ("bg-blue-600 hover:bg-blue-700");
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50 '>
@@ -37,11 +46,11 @@ const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, m
                     {mostrarPassword 
                     ? (<LiaEyeSolid
                     className="absolute text-xl top-1/2 right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-black hover:scale-110 transition duration-300"
-                        onClick={e => setMostrarPassword(false)}
+                        onClick={() => setMostrarPassword(false)}
                     />) 
                     : (<LiaEyeSlashSolid
                         className="absolute top-1/2 text-xl right-4 transform -translate-y-1/2 text-gray-500  cursor-pointer hover:text-black hover:scale-110 transition duration-300"
-                        onClick={e => setMostrarPassword(true)}
+                        onClick={() => setMostrarPassword(true)}
                     />)}
 
                 </div>
@@ -51,7 +60,7 @@ const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, m
                     className={`mt-8 lg:w-32 w-24 flex items-center justify-center text-white font-semibold py-3 px-5 rounded-full 
                                 ${(password.length < 7 && requiredPassword) ? "bg-gray-300" : color+" shadow-lg transition duration-300 transform hover:scale-105 capitalize"}`}
                     disabled={password.length < 7 && requiredPassword}
-                    onClick={e => funcionEjecutar(password || "")}
+                    onClick={() => funcionEjecutar(password || "")}
                 >
                     {accion}
                 </button>
@@ -64,9 +73,7 @@ const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, m
                     Cancelar
                 </button>
             </div>
-            <p className={`mt-4 text-center text-sm ${mensajeError.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
-                {mensajeError}
-            </p>
+            <Mensaje msg={mensajeError}/>
         {(alerta != "") && (<div>
         <FiAlertTriangle
             className="text-red-500 text-4xl mr-3 hover:cursor-pointer hover:scale-110 transition duration-300"
@@ -83,4 +90,19 @@ const ConfirmarAccionPassword = ({ funcionEjecutar, handleCloseModal, mensaje, m
   )
 }
 
+ConfirmarAccionPassword.propTypes = {
+    funcionEjecutar: PropTypes.func.isRequired,
+    handleCloseModal: PropTypes.func.isRequired,
+    mensaje: PropTypes.string.isRequired,
+    mensajeError: PropTypes.oneOfType([ 
+        PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string)
+      ]),
+    accion: PropTypes.string,
+    alerta: PropTypes.string,
+    requiredPassword: PropTypes.bool,
+  };
+  
+
+  
 export default ConfirmarAccionPassword

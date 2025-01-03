@@ -56,6 +56,6 @@ const procesarErrores = (errorResponse, setMensaje, setMostrarConfirmar) => {
     setMensaje("Ha ocurrido un error inesperado.");
     setMostrarConfirmar(false);
 
-  };
+};
   
 export default procesarErrores;

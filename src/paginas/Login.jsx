@@ -1,55 +1,52 @@
-import { useState, useEffect } from "react";
+//importaciones de 3eros
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
-
+//Mis importacioens
 import fondoLogin from '../recursos/foto.jpg';
-import Alerta from "../components/Alerta";
 import clienteAxios from "../config/clienteAxios";
 import useAuth from "../hooks/useAuth";
+import { login } from "../api/auth";
+import PasswordInput from "../components/FormInput/PasswordInput";
+import NombreUsuarioInput from "../components/FormInput/NombreUsuarioInput";
+import { errorMapper } from "../helpers/errorMapper";
 
 const Login = () => {
-    const [mostrarPassword, setMostrarPassword] = useState(false);
-    const [nombre, setNombre] = useState('');
+    //const [mostrarPassword, setMostrarPassword] = useState(false);
+    const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [alerta, setAlerta] = useState({});
+    const [mensaje, setMensaje] = useState(""); 
 
     const { setAuth, auth } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        if ([nombre, password].includes('')) {
-            setAlerta({
-                msg: "Por favor, complete todos los campos obligatorios.",
-                error: true
-            });
-            return;
-        }
 
         try {
-            const url = '/account/login';
-            const { data } = await clienteAxios.post(url, { nombre, password });
-            setAlerta({});
+            const data = await login({ userName, password });
+            //todo: mejorar esto
             localStorage.setItem('token', data.token);
-            data.rol = data.rol.toLowerCase();
-            setAuth(data);
-            navigate(data.rol.toLowerCase());
-        } catch (error) {
-            setAlerta({
-                msg: error.response?.data.msg || "Ocurrió un error al iniciar sesión. Por favor, inténtalo nuevamente.",
-                error: true
-            });
-        }
-    };
+            data.rol = data.roles.$values[0].toLowerCase();
 
-    const { msg } = alerta;
+            setAuth(data);
+        } catch (error) {
+            console.log(error);
+            var {keys, values} = errorMapper(error);
+
+            setMensaje(values || "Ocurrió un error, inténtalo nuevamente más tarde.");
+
+            setTimeout(() => {
+                setMensaje("");
+            }, 5000);
+        }
+    });
 
     useEffect(() => {
-        if (auth?.rol != null) {
-            navigate(auth?.rol);
-            return;
+        if (auth?.rol) {
+            navigate(auth.rol);
         }
-    }, [auth]);
+    }, [auth, navigate]);
 
     return (
         <div 
@@ -62,58 +59,20 @@ const Login = () => {
                     <span className="text-indigo-700">AndarUCI</span>
                 </h1>
         
-                {msg && <Alerta alerta={alerta} />}
         
-                 <form
+                <form
                     className="bg-white rounded-3xl p-6 md:p-8 shadow-md bg-opacity-90" 
                     onSubmit={handleSubmit}
                 >
-                    <div className="mb-6">
-                        <label
-                            className="block text-sm md:text-lg font-medium text-gray-800"
-                            htmlFor="nombre"
-                        >
-                            Nombre de Usuario
-                        </label>
-                        <input
-                            id="nombre"
-                            type="text"
-                            placeholder="Ingrese su nombre de usuario"
-                            className="mt-2 p-2 md:p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-100 focus:bg-white shadow-inner focus:shadow-lg transition duration-300"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <NombreUsuarioInput
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                    />
                 
-                    <div className="mb-6">
-                        <label
-                            className="block text-sm md:text-lg font-medium text-gray-800"
-                            htmlFor="password"
-                        >
-                            Contraseña
-                        </label>
-                        <div className='relative'>
-                            <input
-                                id="password"
-                                type={`${mostrarPassword ? "text" : "password"}`}
-                                placeholder="Ingrese su contraseña"
-                                className="mt-2 p-2 md:p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-100 focus:bg-white shadow-inner focus:shadow-lg transition duration-300"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            {mostrarPassword 
-                                ? (<LiaEyeSolid
-                                    className="absolute mt-1 text-2xl top-1/2 right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-indigo-700 transition duration-300"
-                                    onClick={e => setMostrarPassword(false)}
-                                />) 
-                                : (<LiaEyeSlashSolid
-                                    className="absolute mt-1 top-1/2 text-2xl right-4 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-indigo-700 transition duration-300"
-                                    onClick={e => setMostrarPassword(true)}
-                                />)}
-                        </div>
-                    </div>
+                    <PasswordInput 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 
                     <button
                         type="submit"
@@ -123,6 +82,11 @@ const Login = () => {
                     >
                         Iniciar Sesión
                     </button>
+                    {mensaje && (
+                        <div className={`mt-4 text-center text-sm ${mensaje.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
+                            {mensaje}
+                        </div>
+                    )}
                 </form>
                 <Link
                     className="block text-center text-slate-500 uppercase text-sm mt-5"
