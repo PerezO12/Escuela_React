@@ -4,6 +4,7 @@ const DepartamentoSelector = ({
     value, 
     onChange,
     departamentos,
+    error = false,
     disabled = false, 
     classNameSelect="w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 shadow-sm",
     classNameLabel="block text-lg font-medium text-gray-700 mb-2"
@@ -13,7 +14,7 @@ const DepartamentoSelector = ({
         <label htmlFor="departamento" className={classNameLabel}>Departamentos:</label>
         <select
           id="departamento"
-          className={classNameSelect}
+          className={`${classNameSelect} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
           value={value}
           onChange={onChange}
           disabled={disabled}
@@ -31,6 +32,7 @@ DepartamentoSelector.propTypes = {
     departamentos: PropTypes.array.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,  
     onChange: PropTypes.func.isRequired,
+    error: PropTypes.bool,
     disabled: PropTypes.bool,
     classNameLabel: PropTypes.string,
     classNameSelect: PropTypes.string,

@@ -7,9 +7,10 @@ export const errorMapper = (obj) => {
     }
     for (const [key, value] of Object.entries(obj)) {
         if(key == "$id") continue;
-        keys.push(key[0]);
+        keys.push(key);
         values.push(value[0]);
     };
-
+    console.log("keys", keys);
+    console.log("values", values);
     return { keys, values };
 };

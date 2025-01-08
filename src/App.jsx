@@ -18,12 +18,12 @@ const Login = lazy(() => import('./pages/Login'));
 const RutasEstudiantes = lazy(() => import('./routes/RutasEstudiantes'));
 const RutasEncargados = lazy(() => import('./routes/RutasEncargados'));
 const RutasAdmin = lazy(() => import('./routes/RutasAdmin'));
+const NotFound  = lazy(() => import ('./pages/NotFound'));
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        {/* Suspense envuelve las rutas para mostrar un fallback mientras se cargan */}
         <Suspense fallback={<LoadingSpinner />}>
           <BusquedaProvider>
             <Routes>
@@ -50,6 +50,9 @@ function App() {
               <Route index element={<Navigate to="usuarios" replace />} />
 
               </Route>
+
+              <Route path="*" element={<NotFound />} />{/* Paginas no encontradas */}
+
             </Routes>
           </BusquedaProvider>
         </Suspense>

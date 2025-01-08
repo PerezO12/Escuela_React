@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 const SelectorRolInput = ({
     roles,
     value,
+    error = false,
     onChange,
     classNameSelect="w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 shadow-sm",
     classNameLabel="block text-lg font-medium text-gray-700 mb-2",
@@ -15,7 +16,7 @@ const SelectorRolInput = ({
         </label>
         <select
           id="rol"
-          className={classNameSelect}
+          className={`${classNameSelect} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
           value={value[0]}
           onChange={onChange}
           required
@@ -38,6 +39,7 @@ SelectorRolInput.propTypes = {
     roles: PropTypes.array.isRequired,
     value: PropTypes.array.isRequired,  
     onChange: PropTypes.func.isRequired,
+    error: PropTypes.bool,
     classNameLabel: PropTypes.string,
     classNameSelect: PropTypes.string,
 };

@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 const PasswordInput = ({ 
     value, 
     onChange,
+    error = false,
     required = true,
     placeholder="Ingrese su contraseña",
     classNameLabel="block text-sm md:text-lg font-medium text-gray-800",
@@ -15,17 +16,14 @@ const PasswordInput = ({
 
     return (
         <div className="relative mb-6">
-            <label
-                className={classNameLabel}
-                htmlFor="password"
-            >
+            <label className={classNameLabel} htmlFor="password" >
                 Contraseña
             </label>
             <input
                 id="password"
                 type={mostrarPassword ? "text" : "password"}
                 placeholder={placeholder}
-                className={classNameInput}
+                className={`${classNameInput} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
                 value={value}
                 onChange={onChange}
                 required={required}
@@ -43,6 +41,7 @@ const PasswordInput = ({
 PasswordInput.propTypes = {
     value: PropTypes.string.isRequired,  
     onChange: PropTypes.func.isRequired,
+    error: PropTypes.bool,
     required: PropTypes.bool,
     placeholder: PropTypes.string,
     classNameInput: PropTypes.string,

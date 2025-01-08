@@ -26,11 +26,12 @@ const CrearEditarUsuario = ({
   usuario = {}
   }) => {
     const { setMostrarConfirmar, mensaje, setMensaje } = useBusquedaYEstado();
-
+    
     const [ roles, setRoles] = useState([]);
     const [ carreras, setCarreras ] = useState([]);
     const [ departamentos, setDepartamentos ] = useState([]);
     const [ facultades, setFacultades ] = useState([]);
+    const [ erroresFormulario, setErroresFormulario ] = useState([]);
     
     const [usuarioNuevo, setUsuarioNuevo] = useState({
       nombreCompleto: "",
@@ -115,11 +116,13 @@ const CrearEditarUsuario = ({
       crearEditarUsuario(data);
       setMostrarConfirmar(false);
       setMensaje("Usuario creado exitosamente.");
+      setErroresFormulario([]);
       setTimeout(() => handleCloseModal(),600)
     } 
     catch (error) {
-
-      setMensaje(errorMapper(error)?.values);
+      const { keys, values } = errorMapper(error);
+      setErroresFormulario(keys);
+      setMensaje(values);
     }
   }
   /* Funcion para editar el usuario */
@@ -128,10 +131,13 @@ const CrearEditarUsuario = ({
       const data = await editarUsuario(usuario.id, usuarioNuevo);
       crearEditarUsuario(data);
       setMensaje("El usuario se actualizó exitosamente.")
+      setErroresFormulario([]);
       setTimeout(()=> handleCloseModal(), 600);
     }
     catch(error){
-      setMensaje(errorMapper(error)?.values);
+      const { keys, values } = errorMapper(error);
+      setErroresFormulario(keys);
+      setMensaje(values);
     }
   } 
   /* funcion par validar campos antes de llamarlo */
@@ -159,7 +165,7 @@ const CrearEditarUsuario = ({
   /*borrar el mensahe automaticamente  */
   useEffect(() => {
     if (mensaje) {
-        const timer = setTimeout(() => setMensaje(""), 5000);
+        const timer = setTimeout(() => setMensaje(""), 8000);
         return () => clearTimeout(timer);
     }
   }, [mensaje, setMensaje]);
@@ -190,22 +196,26 @@ const CrearEditarUsuario = ({
           <NombreEditeInput
             value={usuarioNuevo.nombreCompleto}
             onChange={(e) => handleChangeUserNuevo("nombreCompleto", e.target.value)}
+            error={erroresFormulario.includes("NombreCompleto")}
           />
           {/* Nombre de usuario */}
           <NombreUsuarioInput
             value={usuarioNuevo.userName}
             onChange={(e) => handleChangeUserNuevo("userName", e.target.value)}
+            error={erroresFormulario.includes("UserName")}
           />
           {/* Email */}
           <EmailInput
             value={usuarioNuevo.email}
             onChange={(e) => handleChangeUserNuevo("email", e.target.value)}
             placeholder="Email"
+            error={erroresFormulario.includes("Email")}
           />
           {/* Carnet identidad */}
           <CarnetIdentidadInput
             value={usuarioNuevo.carnetIdentidad}
             onChange={(e) => handleChangeUserNuevo("carnetIdentidad", e.target.value)}
+            error={erroresFormulario.includes("CarnetIdentidad")}
           />
           {/* Password y generarlo automatico*/}
           <div>
@@ -214,6 +224,7 @@ const CrearEditarUsuario = ({
               required = {!editar}
               onChange={(e) => handleChangeUserNuevo("password", e.target.value)}
               placeholder="Contraseña del usuario"
+              error={erroresFormulario.includes("Password")}
             />
             <TfiReload 
               className="ml-3 mt-1 text-xl text-gray-500 cursor-pointer hover:text-cyan-900 transition duration-300"
@@ -226,6 +237,7 @@ const CrearEditarUsuario = ({
             roles={roles}
             value={usuarioNuevo.roles}
             onChange={(e) => handleChangeUserNuevo("roles", [e.target.value])}
+            error={erroresFormulario.includes("Roles")}
           />
   
           {(usuarioNuevo.roles.includes("Estudiante") || usuarioNuevo.roles.includes("Encargado")) && (
@@ -235,6 +247,7 @@ const CrearEditarUsuario = ({
                 facultades={facultades}
                 value={usuarioNuevo.facultadId}
                 onChange={(e) => handleChangeUserNuevo("facultadId", e.target.value)}
+                error={erroresFormulario.includes("FacultadId")}
               />
               {/* Carreras */}
               {usuarioNuevo.roles.includes("Estudiante") && (
@@ -243,6 +256,7 @@ const CrearEditarUsuario = ({
                   value={usuarioNuevo.carreraId}
                   onChange={(e) => handleChangeUserNuevo("carreraId", e.target.value)}
                   disabled={usuarioNuevo.facultadId === 0}
+                  error={erroresFormulario.includes("CarreraId")}
                 />
               )}
               {/*Departamentos */}
@@ -252,6 +266,7 @@ const CrearEditarUsuario = ({
                   value={usuarioNuevo.departamentoId}
                   onChange={(e) => handleChangeUserNuevo("departamentoId", e.target.value)}
                   disabled={usuarioNuevo.facultadId === 0}
+                  error={erroresFormulario.includes("DepartamentoId")}
                 />
               )}
             </>
