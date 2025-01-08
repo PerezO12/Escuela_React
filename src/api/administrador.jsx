@@ -84,8 +84,8 @@ export const borrarFacultad = async ( id, password ) => {
 //departamentos
 export const cargarDepartamentos = async (queryCompleto='') => {
     try {
-      const { data } = await clienteAxios.get(`/departamento${queryCompleto}`);
-      return data.data.$values;
+        const { data } = await clienteAxios.get(`/departamento${queryCompleto}`);
+        return data.data.$values;
     } catch (error) {
         throw error.response?.data?.errors || "Ocurrió un error al obtener los departamentos.";
     }
@@ -114,10 +114,80 @@ export const editarDepartamento = async (id, departamento) => {
 
 export const crearDepartamento = async (departamento) => {
     try {
-      const { data } = await clienteAxios.post(`/departamento`, departamento);
-      
-      return data.data;
+        const { data } = await clienteAxios.post(`/departamento`, departamento); 
+        return data.data;
     } catch (error) {
         throw error.response?.data?.errors || "Ocurrió un error al crear el departamento.";
     }
 };
+
+//Usuarios
+export const cargarUsuarios = async (queryCompleto) => {
+    try {
+        const { data } = await clienteAxios.get(`/usuario${queryCompleto}`);
+        return data.data.$values
+    } catch (error) {
+        throw error.response?.data?.errors || "Ocurrió un error al cargar los usuarios.";
+    }
+}
+export const borrarUsuarios = async (usuarioId, password) => {
+    try {
+        const { data } = await clienteAxios.delete(`/usuario/${usuarioId}`, {
+            data: { password } 
+        })
+        return data.data
+    } catch (error) {
+        throw error.response?.data?.errors || "Ocurrió un error al borrar el usuario.";
+    }
+}
+export const editarUsuario = async (usuarioId, usuario) => {
+    try {
+        const { data } = await clienteAxios.patch(`/usuario/${usuarioId}`,usuario);
+        return data.data
+    } catch (error) {
+        throw error.response?.data?.errors || "Ocurrió un error al editar el usuario.";
+    }
+}
+//todo: arreglar esto
+export const crearUsuario = async (usuario) => {
+    try {
+        let url;
+        if(usuario.roles.includes("Encargado"))
+            url = "/encargado/registrar-encargado";
+        else if(usuario.roles.includes("Estudiante"))
+            url = "/estudiante/registrar-estudiante";
+        else if(usuario.roles.includes("Admin"))
+            url = "/usuario/registrar-admin";
+
+        const { data } = await clienteAxios.post(url, usuario);
+
+        return data.data;
+    } catch (error) {
+        throw error.response?.data?.errors || "Ocurrió un error al editar el usuario.";
+    }
+}
+
+export const cargarDatosUsuario = async (roles, usuarioId) => {
+    try {
+        let url = "/usuario";
+        if(roles.includes("Encargado"))
+            url = "/encargado/usuario";
+        else if(roles.includes("Estudiante"))
+            url = "/estudiante/usuario";
+        else if(roles.includes("Admin"))
+            url = "/usuario";
+
+        const { data } = await clienteAxios.get(`${url}/${usuarioId}`)
+        return data.data
+    } catch (error) {
+        throw error.response?.data?.errors || "Ocurrió un error al editar el usuario.";
+    }
+}
+export const cargarRoles = async () => {
+    try {
+        const { data } = await clienteAxios.get("/rol");
+        return data.data.$values;
+    } catch (error) {
+        throw error.response?.data?.errors || "Ocurrió un error al editar el usuario.";
+    }
+}

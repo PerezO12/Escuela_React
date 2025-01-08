@@ -1,13 +1,11 @@
 import { useState, useCallback } from "react";
-import useQuery from "./useQuery";
 
 const useBusquedaYEstado = (configInicial = { ordenar: "Fecha", pagina: 1, descender: false }) => {
-    const { query } = useQuery();
   
     const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [mensaje, setMensaje] = useState("");
-    const [error, setError] = useState("");
+    const [alerta, setAlerta] = useState("");
     const [busqueda, setBusqueda] = useState(configInicial);
 
     const actualizarBusqueda = useCallback((nuevosValores) => {
@@ -38,10 +36,10 @@ const useBusquedaYEstado = (configInicial = { ordenar: "Fecha", pagina: 1, desce
         setMensaje("");
       }, [setMostrarConfirmar, setMensaje]);
 
-    const generarQueryCompleto = useCallback(() => {
-        return `?${query}OrdenarPor=${busqueda.ordenar}&NumeroPagina=${busqueda.pagina}&Descender=${busqueda.descender}&`;
+    const generarQueryCompleto = useCallback((query = "") => {
+        return `?OrdenarPor=${busqueda.ordenar}&NumeroPagina=${busqueda.pagina}&Descender=${busqueda.descender}&${query}`;
         },
-        [busqueda, query]
+        [busqueda]
     );
 
   return {
@@ -51,8 +49,8 @@ const useBusquedaYEstado = (configInicial = { ordenar: "Fecha", pagina: 1, desce
     setMostrarFormulario,
     mensaje,
     setMensaje,
-    error,
-    setError,
+    alerta,
+    setAlerta,
     busqueda,
     handleOrdenarPor,
     handleActualizarPagina,

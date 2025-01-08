@@ -1,62 +1,33 @@
-import { Outlet, Navigate } from "react-router-dom"
-import { useEffect, useState } from "react";
-import { CiMenuBurger } from "react-icons/ci";
+import { Outlet, Navigate } from "react-router-dom";
 
-import useAuth from "../hooks/useAuth"
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
-import clienteAxios from "../config/clienteAxios";
-import { QueryProvider } from "../context/QueryProvider";
-import SidebarAdmin from "../components/Admin/SidebarAdmin";
-import LoadingSpinner from "../components/LoadingSpinner";
+// Context
+import useAuth from "../hooks/useAuth";
 
-const RutaProtegida = () => {
+// Components
+import LoadingSpinner from "../components/common/LoadingSpinner";
 
-    const { auth, cargando } = useAuth();
-    const [ mostrarSidebar, setMostrarSidebar ] = useState(false);
+// Utils
+import { ROLES } from "../utils/roles"; 
+import PropTypes from "prop-types";
 
-    /* useEffect(() => {
-      if (auth?.token) {
-          clienteAxios.defaults.headers['Authorization'] = `Bearer ${auth.token}`;
-      }
-    }, [auth]); */
+const RutaProtegida = ({ roles }) => {
+  const { auth, cargando } = useAuth();
 
-    if (cargando) return <LoadingSpinner />;
-    //para q se actualice el token al iniciar seccion luego d haberlo destruido
-/*     const token = localStorage.getItem('token');
-    clienteAxios.defaults.headers['Authorization'] = `Bearer ${token}` */
+  // Si está cargando, mostrar el spinner
+  if (cargando) return <LoadingSpinner />;
 
-  return (
-    <>
-        {auth?.id ? 
-        (
-          <QueryProvider>
-            <div className="bg-gray-100 ">
-                <Header/>
+  if (!auth?.id) return <Navigate to="/" />;
 
-                <div className="md:flex relative">
-                  <CiMenuBurger 
-                    className=" absolute top-4 left-2 z-10 lg:text-3xl text-2xl text-zinc-800 hover:text-zinc-900 cursor-pointer transition-transform transform hover:scale-110"
-                    onClick={e => setMostrarSidebar(!mostrarSidebar)}
-                  />
-                  {mostrarSidebar && 
-                  (<div className="md:flex relative z-0 ">
-                    {auth.rol != 'admin'?
-                      (<Sidebar />)
-                    : (<SidebarAdmin />) //todo:mejorar esto
-                    }
-                  </div>)}
+  if (!roles?.split(",").includes(auth?.rol)) return <Navigate to="/acceso-denegado" />;
 
-                  <main className="lg:p-7 md:p-3 flex-1 lg:overflow-auto lg:h-[calc(101vh-80px)] h-[calc(101vh-60px)]">
-                    <Outlet/>
-                  </main>
-                </div>
-            </div>  
-          </QueryProvider>
-
-        ) : <Navigate to='/'/>}
-    </>
-  )
+  return <Outlet />;
 }
 
-export default RutaProtegida
+RutaProtegida.propTypes = {
+  roles: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.oneOf(Object.values(ROLES))), 
+  ]),
+};
+
+export default RutaProtegida;

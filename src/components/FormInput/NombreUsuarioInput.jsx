@@ -1,18 +1,22 @@
 import PropTypes from "prop-types"
 
-const NombreUsuarioInput = ({value, onChange}) => {
+const NombreUsuarioInput = ({
+  value, 
+  onChange,
+  placeholder="Ingrese su nombre de usuario"
+}) => {
   return (
     <div className="mb-6">
         <label
             className="block text-sm md:text-lg font-medium text-gray-800"
-            htmlFor="nombre"
+            htmlFor="userName"
         >
             Nombre de Usuario
         </label>
         <input
-            id="nombre"
+            id="userName"
             type="text"
-            placeholder="Ingrese su nombre de usuario"
+            placeholder={placeholder}
             className="mt-2 p-2 md:p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-100 focus:bg-white shadow-inner focus:shadow-lg transition duration-300"
             value={value}
             onChange={onChange}
@@ -25,6 +29,7 @@ const NombreUsuarioInput = ({value, onChange}) => {
 NombreUsuarioInput.propTypes = {
   value: PropTypes.string.isRequired,  
   onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
 };
 
 

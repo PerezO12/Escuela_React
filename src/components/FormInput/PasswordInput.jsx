@@ -1,14 +1,22 @@
-import React from "react";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-const PasswordInput = ({ value, onChange }) => {
+const PasswordInput = ({ 
+    value, 
+    onChange,
+    required = true,
+    placeholder="Ingrese su contraseña",
+    classNameLabel="block text-sm md:text-lg font-medium text-gray-800",
+    classNameInput="mt-2 p-2 md:p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-100 focus:bg-white shadow-inner focus:shadow-lg transition duration-300",
+
+}) => {
     const [mostrarPassword, setMostrarPassword] = useState(false);
 
     return (
         <div className="relative mb-6">
             <label
-                className="block text-sm md:text-lg font-medium text-gray-800"
+                className={classNameLabel}
                 htmlFor="password"
             >
                 Contraseña
@@ -16,11 +24,11 @@ const PasswordInput = ({ value, onChange }) => {
             <input
                 id="password"
                 type={mostrarPassword ? "text" : "password"}
-                placeholder="Ingrese su contraseña"
-                className="mt-2 p-2 md:p-3 w-full rounded-lg border border-gray-300 focus:border-indigo-500 bg-gray-100 focus:bg-white shadow-inner focus:shadow-lg transition duration-300"
+                placeholder={placeholder}
+                className={classNameInput}
                 value={value}
                 onChange={onChange}
-                required
+                required={required}
             />
             <button
                 type="button"
@@ -31,6 +39,14 @@ const PasswordInput = ({ value, onChange }) => {
             </button>
         </div>
     );
+};
+PasswordInput.propTypes = {
+    value: PropTypes.string.isRequired,  
+    onChange: PropTypes.func.isRequired,
+    required: PropTypes.bool,
+    placeholder: PropTypes.string,
+    classNameInput: PropTypes.string,
+    classNameLabel: PropTypes.string,
 };
 
 export default PasswordInput;

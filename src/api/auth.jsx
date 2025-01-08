@@ -15,6 +15,17 @@ export const cargarDatosUsuario = async (config) => {
         const { data } = await clienteAxios.get('/account/obtener-perfil', config);
         return data.data;
     } catch(error) {
-        throw error.response.data || "Ocurrió un error.";
+        throw error.response?.data?.errors || "Ocurrió un error.";
+    }
+}
+export const cambiarPassword = async ( passwordActual, passwordNueva ) => {
+    try {
+        const { data } = await clienteAxios.post("/account/cambiar-password", {
+            passwordActual,
+            passwordNueva
+        });
+        return data.data;
+    } catch(error) {
+        throw error.response?.data?.errors || "Ocurrió un error.";
     }
 }

@@ -1,6 +1,4 @@
 import { useState, useEffect, createContext } from "react";
-import { useNavigate } from 'react-router-dom';
-import clienteAxios from '../config/clienteAxios';
 import { cargarDatosUsuario } from "../api/auth";
 
 
@@ -27,7 +25,7 @@ const AuthProvider = ({children}) => {
             }
             try {
                 const data = await cargarDatosUsuario(config);
-                data.roles = data.roles.$values.map(r => r.toLowerCase());
+                data.roles = data.roles.$values;
                 data.rol = data.roles[0];//todo: esto es temporal hasta ver como manear si un solo rol o varios
                 setAuth(data);
             } catch(error) {
