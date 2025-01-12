@@ -1,55 +1,46 @@
 
-import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-
-import convertirFechas from "../../../utils/convertirFechas";
 import FormularioFirmar from "./FormularioFirmar";
+import ListaColumnasElementos from "../../common/ListaColumnasElementos";
+import PropTypes from "prop-types";
 
-const FormularioEncargado = ( {formulario, eliminarFormularioFirmado} ) => {
+const FormularioEncargado = ( {formulario, filtrarFormulario} ) => {
     const {
         id,
         nombreCompletoEstudiante,
         nombreCarrera,
         motivo,
         fechacreacion
-    }   = formulario;
+    } = formulario;
     const [ mostrarFirmarFormulario, setMostrarFirmarForulario ] = useState(false);
-    const navigate = useNavigate();
 
-    const handleMostrarFirmarFormulario = () => {
-      setMostrarFirmarForulario(true);
-    }
-    const handleCloseModal = () => {
-      setMostrarFirmarForulario(false);
-    }
   return (
     <>
-      <div 
-        className="relative justify-between items-center px-3 py-2 border shadow-lg bg-white space-x-4 rounded-lg transition-transform transform hover:bg-blue-50 hover:shadow-2xl cursor-pointer5"
-        onClick={handleMostrarFirmarFormulario}
-      >
-          <div 
-          className="grid grid-cols-4 gap-0 hover:cursor-pointer"
-          
-          >
-              <p className="hover:text-blue-700 lg:text-base text-sm transition-colors capitalize truncate">{nombreCompletoEstudiante}</p>
-              <p className="hover:text-blue-700 lg:text-base text-sm transition-colors capitalize truncate">{nombreCarrera}</p>
-              <p className="text-blue-900 hover:text-blue-800 lg:text-base text-sm transition-colors truncate">{convertirFechas(fechacreacion)}</p>
-              <p className="hover:text-blue-700 lg:text-base text-sm transition-colors truncate">{motivo}</p>
-          </div>
-      </div>
-      <div className="">
-        {mostrarFirmarFormulario && 
-          <FormularioFirmar 
-            handleCloseModal={handleCloseModal} 
-            id={id}
-            eliminarFormularioFirmado={eliminarFormularioFirmado}
-            />}
-      </div>
+
+      {mostrarFirmarFormulario && 
+        <FormularioFirmar 
+          handleCloseModal={() => setMostrarFirmarForulario(false)} 
+          id={id}
+          filtrarFormulario={filtrarFormulario}
+        />}
+
+        <ListaColumnasElementos 
+          handleFuncionEjecutar={ () => setMostrarFirmarForulario(true)} 
+          elementos={[nombreCompletoEstudiante, nombreCarrera, fechacreacion, motivo]}
+        />
     </>
   )
 }
+FormularioEncargado.propTypes = {
+  formulario: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    nombreCompletoEstudiante: PropTypes.string.isRequired,
+    nombreCarrera: PropTypes.string.isRequired,
+    motivo: PropTypes.string.isRequired,
+    fechacreacion: PropTypes.string.isRequired,
+  }).isRequired,
+  filtrarFormulario: PropTypes.func.isRequired,
+};
 
 export default FormularioEncargado
 

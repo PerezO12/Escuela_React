@@ -37,11 +37,13 @@ function App() {
               {/* Rutas para estudiantes */}
               <Route path='/estudiante' element={<RutaProtegida roles="Estudiante"/>}>
                 <Route path="*" element={<RutasEstudiantes />} />
+                <Route index element={<Navigate to="formularios" replace />} />
               </Route>
 
               {/* Rutas para encargados */}
               <Route path='/encargado' element={<RutaProtegida roles="Encargado"/>}>
               <Route path="*" element={<RutasEncargados />} />
+              <Route index element={<Navigate to="formularios" replace />} />
               </Route>
 
               {/* Rutas para administrador */}

@@ -10,7 +10,6 @@ export const errorMapper = (obj) => {
         keys.push(key);
         values.push(value[0]);
     };
-    console.log("keys", keys);
-    console.log("values", values);
+
     return { keys, values };
 };

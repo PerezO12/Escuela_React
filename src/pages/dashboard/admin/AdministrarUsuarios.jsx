@@ -49,7 +49,6 @@ const AdministrarUsuarios = () => {
   }, [cargarDatos, buscar.busqueda, buscar.buscarPor, generarQueryCompleto]);
 
   // Actualizar opciones de busqueda al montar el componente
-  //todo: cambiar opciones
   useEffect(() => {
     setOpciones(["Nombre", "Usuario", "Email", "CarnetIdentidad"]);
   }, [setOpciones]);
@@ -76,6 +75,7 @@ const AdministrarUsuarios = () => {
   const handleCrearUsuario = async (data) => {
       setUsuarios([...usuarios, data]);
   };
+  
   const handleDelete = (id) => {
     setUsuarioId(id);
     setMostrarConfirmar(true);

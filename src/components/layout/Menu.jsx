@@ -8,7 +8,7 @@ const Menu = ({
   rol = "",
   mostrarOcultarMenu
 }) => {
-    
+    console.log(rol)
     const [ cambiarPassword, setCambiarPassword ] = useState(false);
     const [ gestionLlaves, setGestionLlaves ] = useState(false);
 
@@ -22,7 +22,7 @@ const Menu = ({
     };
     const handleGestionarLlaves = () => {
         setGestionLlaves(!gestionLlaves);
-        mostrarOcultarMenu(false)
+        //mostrarOcultarMenu(false)
     }
     const handleCloseModal = () => {
         setCambiarPassword(false);
@@ -30,13 +30,13 @@ const Menu = ({
     }
     return (
       <>
-        <div className=" absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
             
             {/* Cambiar password */}
             <MenuButton onClick={handleCambiarPassword}>Cambiar contraseña </MenuButton>
 
             {/* Opciones para los encargados */}
-            {rol == "encargado" &&
+            {rol.toLowerCase() == "encargado" &&
             (
               <MenuButton onClick={handleGestionarLlaves}>Gestionar Llaves</MenuButton>
             )}
@@ -48,7 +48,7 @@ const Menu = ({
             <MenuButton onClick={handleLogout}>Cerrar sesión</MenuButton>
         </div>
         
-         {cambiarPassword && <CambiarPassword handleCloseModal={handleCloseModal} />} 
+         {cambiarPassword && <CambiarPassword handleCloseModal={handleCloseModal} />}
          {gestionLlaves && <GestionarLlaves />}
       </>
       )

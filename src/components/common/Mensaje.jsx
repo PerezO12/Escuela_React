@@ -23,7 +23,7 @@ const Mensaje = ({ msg }) => {
 
 // Definir los PropTypes
 Mensaje.propTypes = {
-  msg: PropTypes.oneOfType([  // msg puede ser un string o un array de strings
+  msg: PropTypes.oneOfType([ 
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string)
   ]).isRequired

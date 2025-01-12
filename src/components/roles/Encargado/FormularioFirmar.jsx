@@ -1,49 +1,43 @@
-import { useState, useEffect } from 'react';
-import clienteAxios from '../../config/clienteAxios';
+import { useState, useEffect, useCallback } from 'react';
+import { errorMapper } from '../../../utils/errorMapper';
+import BotonCerrarVentanas from '../../common/BotonCerrarVentanas';
+import Mensaje from '../../common/Mensaje';
+import { cargarLlave } from '../../../utils/llavesDigitales';
+import FormularioRead from '../../FormInput/FormularioRead';
+import { cargarFormularioById, firmarFormulario } from '../../../api/encargado';
+import PropTypes from 'prop-types';
 
-const FormularioFirmar = ({ handleCloseModal, id, eliminarFormularioFirmado }) => {
+const FormularioFirmar = ({ handleCloseModal, id, filtrarFormulario }) => {
   const [formulario, setFormulario] = useState({});
   const [llavePrivada, setLlavePrivada] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const [file, setFile] = useState(null);
+  //const [file, setFile] = useState(null);
 
   // Cargar los detalles del formulario
-  const cargarFormulario = async () => {
+  const cargarDatosFormulario = useCallback(async (id) => {
     try {
-      const { data } = await clienteAxios.get(`/Formulario/encargados/${id}`);
+      const data = await cargarFormularioById(id);
       setFormulario(data);
     } catch (error) {
       console.log(error);
     }
-  };
-
-  useEffect(() => {
-    cargarFormulario();
   }, []);
 
+  useEffect(() => {
+    cargarDatosFormulario(id);
+  }, [cargarDatosFormulario, id]);
+
   // Manejar la carga de la llave privada
-  const handleCargarLlavePrivada = (e) => {
+  //todo:falta probar
+  const handleCargarLlavePrivada = async (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const fileContent = reader.result;
-
-      // Limpiar el contenido de la clave privada
-      const privateKey = fileContent
-        .replace(/-----(BEGIN|END) PRIVATE KEY-----/g, '')
-        .replace(/\s+/g, '');
+    //setFile(selectedFile);
+    try {
+      const privateKey = await cargarLlave(selectedFile, "privada");
       setLlavePrivada(privateKey);
       setMensaje('Archivo cargado exitosamente.');
-    };
-    reader.onerror = () => {
-      setMensaje('Error al leer el archivo.');
-    };
-
-    if (selectedFile) {
-      reader.readAsText(selectedFile);
+    } catch (error) {
+      setMensaje(error);
     }
   };
 
@@ -55,24 +49,16 @@ const FormularioFirmar = ({ handleCloseModal, id, eliminarFormularioFirmado }) =
       return;
     }
     try{
-      const { data } = await clienteAxios.patch(`Formulario/firmar/${id}`, {llavePrivada})
+      await firmarFormulario(id, llavePrivada)
       setMensaje("Formulario firmado exitosamente");
-      console.log("id: ", id);
-      eliminarFormularioFirmado(id);
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1000);
+      filtrarFormulario(id);
+      setTimeout(() => handleCloseModal(), 600);
     } catch(error) {
-      console.log(error.response.data);
-      setMensaje(error.response.data.msg);
-      setLlavePrivada('');
+      setLlavePrivada("");
+      setMensaje(errorMapper(error)?.values);
     }
     
   };
-
-  if (!formulario) {
-    return <div className="text-center text-gray-500">Cargando...</div>;
-  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-md z-50">
@@ -80,13 +66,7 @@ const FormularioFirmar = ({ handleCloseModal, id, eliminarFormularioFirmado }) =
         className="bg-white shadow-2xl rounded-xl px-10 py-10 w-full lg:w-2/4 md:w-3/5 relative max-h-[97vh] overflow-y-auto transition-all duration-300 transform scale-100"
       >
         {/* Botón de cierre */}
-        <button
-          onClick={handleCloseModal}
-          className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition duration-300 lg:text-2xl"
-          aria-label="Cerrar modal"
-        >
-          &times;
-        </button>
+        <BotonCerrarVentanas onClick={handleCloseModal}/>
   
         {/* Título */}
         <h2 className="lg:text-3xl text-2xl font-extrabold mb-4 text-center">
@@ -96,39 +76,36 @@ const FormularioFirmar = ({ handleCloseModal, id, eliminarFormularioFirmado }) =
         </h2>
   
         {/* Contenido */}
-        <div className="space-y-6">
-          <div>
-            <p className="text-lg font-medium text-black">Nombre Completo:</p>
-            <p className="text-gray-700 capitalize">{formulario.nombreCompletoEstudiante}</p>
-          </div>
-  
-          <div>
-            <p className="text-lg font-medium text-gray-800">Correo Electrónico:</p>
-            <p className="text-gray-700">{formulario.email}</p>
-          </div>
-  
-          <div>
-            <p className="text-lg font-medium text-gray-800">Carnet de Identidad:</p>
-            <p className="text-gray-700">{formulario.carnetIdentidad}</p>
-          </div>
-  
-          <div>
-            <p className="text-lg font-medium text-gray-800">Carrera:</p>
-            <p className="text-gray-700">{formulario.nombreCarrera}</p>
-          </div>
-  
-          <div>
-            <p className="text-lg font-medium text-gray-800">Motivo:</p>
-            <div className="bg-gray-100 text-gray-700 rounded-lg p-3 shadow-inner max-h-40 overflow-y-auto break-words">
-              {formulario.motivo}
-            </div>
-          </div>
-  
-          <div>
-            <p className="text-lg font-medium text-gray-800">Fecha de Creación:</p>
-            <p className="text-gray-700">{new Date(formulario.fechacreacion).toLocaleString()}</p>
-          </div>
-        </div>
+        <FormularioRead
+          elementos={[
+            {
+              titulo: "Nombre Completo",
+              valor: formulario.nombreCompletoEstudiante || ""
+            },
+            {
+              titulo: "Correo Electrónico",
+              valor: formulario.email || ""
+            },
+            {
+              titulo: "Carnet de Identidad",
+              valor: formulario.carnetIdentidad || ""
+            },
+            {
+              titulo: "Carrera",
+              valor: formulario.nombreCarrera || ""
+            },
+            {
+              titulo: "Motivo",
+              valor: formulario.motivo || ""
+            },
+            {
+              titulo: "Fecha de Creación",
+              valor: formulario.fechacreacion
+                ? new Date(formulario.fechacreacion).toLocaleString()
+                : "No disponible"
+            },
+          ]}
+        />
   
         {/* Cargar llave privada o firmar */}
         <div className="mt-8">
@@ -157,19 +134,18 @@ const FormularioFirmar = ({ handleCloseModal, id, eliminarFormularioFirmado }) =
         </div>
   
         {/* Mensajes de estado */}
-        {mensaje && (
-          <p
-            className={`mt-4 text-center text-sm ${
-              mensaje.includes('exitosamente') ? 'text-green-500' : 'text-red-500'
-            }`}
-          >
-            {mensaje}
-          </p>
-        )}
+        {mensaje && <Mensaje msg={mensaje}/>}
+
       </div>
     </div>
   );
   
 }
+
+FormularioFirmar.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  handleCloseModal: PropTypes.func.isRequired,
+  filtrarFormulario: PropTypes.func.isRequired,
+};
 
 export default FormularioFirmar;

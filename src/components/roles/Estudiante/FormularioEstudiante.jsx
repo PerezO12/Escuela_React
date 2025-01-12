@@ -1,14 +1,23 @@
 import { useState,useRef, useEffect } from "react";
 
-import clienteAxios from "../../../config/clienteAxios";
 import convertirFechas from "../../../utils/convertirFechas";
+import { actualizarFormulario, borrarFormulario } from "../../../api/estudiante";
+import { errorMapper } from "../../../utils/errorMapper";
+import ConfirmarAccionPassword from "../../common/ConfirmarAccionPassword";
+import PropTypes from "prop-types";
 
-const FormularioEstudiante = ( { formulario, cargarDatos }) => {
+//todo:arreglar este componente luego
+const FormularioEstudiante = ( { 
+    formulario, 
+    editarArregloFormulario,
+    borrarFormularioDelArreglo 
+}) => {
 const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, fechacreacion } = formulario;
 
-
     const [ isEditing, setIsEditing ] = useState(false);
-    const [ motivoEditado, setMotivoEditado ] = useState(motivo) 
+    const [ motivoEditado, setMotivoEditado ] = useState(motivo);
+    const [ mensaje, setMensaje ] = useState(""); 
+    const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
 
     const textareaRef = useRef(null);
 
@@ -16,15 +25,14 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
         setIsEditing(true);
     }
     const handleEliminar = async () => {
-        const respuesta = confirm("Desea eliminar el formulario?"); 
-        if(respuesta) {
-            try {
-                const { data } = await clienteAxios.delete(`Formulario/${id}`);
-                cargarDatos();
-            }
-            catch(error) {
-                console.log(error.response);
-            }
+        setMostrarConfirmar(false);
+        try {
+            await borrarFormulario(id);
+            borrarFormularioDelArreglo(id);
+        }
+        catch(error) {
+            setMensaje(errorMapper(error)?.values);
+            setTimeout(() => setMensaje(""), 6000);
         }
     } 
 
@@ -33,19 +41,19 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
             textareaRef.current.focus();
         }
     }, [isEditing]);
-    //TODO URGENTE: HACER UN REFRESH D LOS DATOS
-    //actualizar el formulario
-    const actualizarFormulario = async () => {
+
+    const handleEditarFormulario = async () => {
         //todo:cambiar este alert
         if(motivoEditado.length < 5 || motivoEditado.length > 1000) {
             alert("El motivo no es válido (5 y 1000)");
         }
         try{
-            const { data } = await clienteAxios.patch(`/Formulario/${id}`, {motivo:motivoEditado});
+            const data = await actualizarFormulario(id, motivoEditado);
             setIsEditing(false);
-            cargarDatos();
+            editarArregloFormulario(data);
         }catch(error) {
-            console.log(error);
+            setMensaje(errorMapper(error)?.values);
+            setTimeout(() => setMensaje(""), 6000);
         }
     }
 
@@ -95,7 +103,7 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
                         type="button"
                         className='py-2 px-10 bg-red-600 hover:bg-red-700
                              text-white font-bold uppercase rounded-lg'
-                        onClick={e => {
+                        onClick={() => {
                             setIsEditing(false);
                             setMotivoEditado(motivo);
                         }}
@@ -123,7 +131,7 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
                                 : 'bg-indigo-600 hover:bg-indigo-700'
                         } text-white font-bold uppercase rounded-lg`}
                         disabled= {motivo == motivoEditado}
-                        onClick={actualizarFormulario}
+                        onClick={handleEditarFormulario}
                     >
                         Guardar
                     </button>)
@@ -135,15 +143,36 @@ const { id, nombreEncargado, nombreDepartamento, firmado, motivo, fechafirmado, 
                                 : 'bg-red-600 hover:bg-red-700'
                         } text-white font-bold uppercase rounded-lg`}
                         disabled= {firmado}
-                        onClick={handleEliminar}
+                        onClick={() => setMostrarConfirmar(true)}
                     >
                         Eliminar
                     </button>)}
                 </div> 
-
-
+                {mostrarConfirmar &&(
+                    <ConfirmarAccionPassword
+                        funcionEjecutar={handleEliminar} 
+                        handleCloseModal={() => setMostrarConfirmar(false)} 
+                        mensaje={"¿Está seguro que desea borrar el formulario?"}
+                        mensajeError= {mensaje}
+                        alerta={"Si borra el formulario no se podrá restaurar"}
+                        requiredPassword={false} 
+                    />
+                )}
             </div>
     )
+}
+FormularioEstudiante.propTypes = {
+    formulario: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        nombreEncargado: PropTypes.string.isRequired,
+        nombreDepartamento: PropTypes.string.isRequired,
+        firmado: PropTypes.bool.isRequired,
+        motivo: PropTypes.string.isRequired,
+        fechafirmado: PropTypes.string,
+        fechacreacion: PropTypes.string.isRequired
+    }).isRequired,
+    editarArregloFormulario: PropTypes.func.isRequired,
+    borrarFormularioDelArreglo: PropTypes.func.isRequired
 }
 
 export default FormularioEstudiante

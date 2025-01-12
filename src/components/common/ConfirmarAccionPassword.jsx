@@ -10,7 +10,7 @@ const ConfirmarAccionPassword = ({
     funcionEjecutar, 
     handleCloseModal, 
     mensaje, 
-    mensajeError, 
+    mensajeError = "", 
     accion="Eliminar", 
     alerta="", 
     requiredPassword=true 
@@ -66,7 +66,7 @@ const ConfirmarAccionPassword = ({
                     {accion}
                 </button>
                 <button
-                    className='mt-8 lg:w-32 w-24 flex items-center justify-center bg-gray-500 hover:bg-gray-600
+                    className='mt-8 lg:w-32 w-24 flex items-center justify-center bg-blue-700 hover:bg-blue-800
                         text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-300 border-collapse
                         transform hover:scale-105'
                     onClick={handleCloseModal}

@@ -9,7 +9,7 @@ const ListaGenerica = ({
     onDelete,
     setMostrarFormulario,
     handleCambiarPagina,
-
+    mostrarDivCrear = true
 }) => {
   return (
     <div>
@@ -34,7 +34,7 @@ const ListaGenerica = ({
       {/* Botón para mostrar formulario */}
       <div className="flex justify-end mb-2 lg:mr-10">
         <div
-          className="bg-blue-600 transition duration-200 text-white rounded-full p-3 shadow-2xl border hover:bg-blue-700 hover:scale-105"
+          className={`bg-blue-600 transition duration-200 text-white rounded-full p-3 shadow-2xl border hover:bg-blue-700 hover:scale-105 ${mostrarDivCrear ? "" : "invisible"}`}    
           onClick={() => setMostrarFormulario(true)}
         >
           <IoAddOutline className="text-3xl" />
@@ -59,6 +59,7 @@ ListaGenerica.propTypes = {
   ).isRequired,
   renderItem: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  mostrarDivCrear: PropTypes.bool,
   setMostrarFormulario: PropTypes.func.isRequired,
   handleCambiarPagina: PropTypes.func.isRequired
 };

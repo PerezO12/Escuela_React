@@ -27,16 +27,18 @@ const Login = () => {
             //todo: mejorar esto
             localStorage.setItem('token', data.token);
             data.roles = data.roles.$values;
-            data.rol = data.roles.$values[0]
+            console.log(data)
+            data.rol = data.roles[0]
             setAuth(data);
         } catch (error) {
+            console.log(error)
             setMensaje( errorMapper(error)?.values);
         }
     }, [userName, setAuth, password]);
 
     useEffect(() => {
         if (auth?.rol) {
-            navigate(auth.rol);
+            navigate(auth.rol.toLowerCase());
         }
     }, [auth, navigate]);
     

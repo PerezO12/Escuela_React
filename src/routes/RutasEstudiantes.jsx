@@ -1,12 +1,20 @@
-import { Routes, Route } from 'react-router-dom';
-import AndarEstudiantes from '../paginas/AndarEstudiantes';
-import CrearFormulario from '../paginas/CrearFormulario';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import FormulariosEstudiante from '../pages/dashboard/estudiante/FormulariosEstudiante';
+import CrearFormulario from '../pages/dashboard/estudiante/CrearFormulario';
+import NotFound from '../pages/NotFound';
+import EstudianteLayout from '../layouts/EstudianteLayout';
 
 const RutasEstudiantes = () => {
   return (
     <Routes>
-      <Route index element={<AndarEstudiantes />} />
-      <Route path="crear-formulario" element={<CrearFormulario />} />
+      <Route path='/' element={<EstudianteLayout />}>
+        <Route index element={<Navigate to={"formularios"} replace />} />
+        <Route path='formularios' element={<FormulariosEstudiante />} />
+        <Route path="crear-formulario" element={<CrearFormulario />} />
+
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
