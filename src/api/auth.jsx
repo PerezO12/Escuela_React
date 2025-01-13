@@ -29,3 +29,11 @@ export const cambiarPassword = async ( passwordActual, passwordNueva ) => {
         throw error.response?.data?.errors || "Ocurrió un error.";
     }
 }
+export const cerrarSesion = async () => {
+    try {
+        const { data } = await clienteAxios.post("/account/logout");
+        return data.data;
+    } catch(error) {
+        throw error.response?.data?.errors || "Ocurrió un error.";
+    }
+}

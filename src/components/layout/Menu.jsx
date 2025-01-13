@@ -3,6 +3,7 @@ import CambiarPassword from '../common/CambiarPassword';
 import GestionarLlaves from '../roles/Encargado/GestionarLlaves';
 import MenuButton from '../common/MenuButton';
 import PropTypes from 'prop-types';
+import { cerrarSesion } from '../../api/auth';
 
 const Menu = ({
   rol = "",
@@ -16,9 +17,14 @@ const Menu = ({
     const handleCambiarPassword = () => {
         setCambiarPassword(true);
     }
-    const handleLogout = () => {
+    const handleLogout = async () => {
+      try{
+        await cerrarSesion();
         localStorage.removeItem('token');
         window.location.href = '/';
+      } catch(error) {
+        console.error(error);
+      }
     };
     const handleGestionarLlaves = () => {
         setGestionLlaves(!gestionLlaves);
