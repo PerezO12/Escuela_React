@@ -11,7 +11,7 @@ const Mensaje = ({ msg }) => {
       ));
     } else {
       return (
-        <p className={`mt-4 text-center text-sm ${msg.includes('exitosamente') ? 'text-green-500' : 'text-red-500'}`}>
+        <p className={`mt-4 text-center text-sm ${(msg.includes('exitosamente') || msg.includes('correctamente')) ? 'text-green-500' : 'text-red-500'}`}>
           {msg}
         </p>
       );

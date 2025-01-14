@@ -7,12 +7,10 @@ import useAuth from "../hooks/useAuth";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
 // Utils
-import { ROLES } from "../utils/roles"; 
 import PropTypes from "prop-types";
 
 const RutaProtegida = ({ roles }) => {
   const { auth, cargando } = useAuth();
-
   // Si está cargando, mostrar el spinner
   if (cargando) return <LoadingSpinner />;
 
@@ -26,7 +24,7 @@ const RutaProtegida = ({ roles }) => {
 RutaProtegida.propTypes = {
   roles: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.arrayOf(PropTypes.oneOf(Object.values(ROLES))), 
+    PropTypes.arrayOf(PropTypes.string), 
   ]),
 };
 

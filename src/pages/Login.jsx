@@ -14,7 +14,8 @@ const Login = () => {
     //const [mostrarPassword, setMostrarPassword] = useState(false);
     const [userName, setuserName] = useState('');
     const [password, setPassword] = useState('');
-    const [mensaje, setMensaje] = useState(""); 
+    const [mensaje, setMensaje] = useState("");
+    const [twoFactor, setTwoFactor] = useState(false);
 
     const { setAuth, auth } = useAuth();
     const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Login = () => {
             console.log(data)
             data.rol = data.roles[0]
             setAuth(data);
+            setTwoFactor(data.twoFactorEnabled)
         } catch (error) {
             console.log(error)
             setMensaje( errorMapper(error)?.values);
@@ -37,10 +39,13 @@ const Login = () => {
     }, [userName, setAuth, password]);
 
     useEffect(() => {
-        if (auth?.rol) {
+        if (auth?.rol && !twoFactor) {
             navigate(auth.rol.toLowerCase());
         }
-    }, [auth, navigate]);
+        if(twoFactor) {
+            navigate("app/2fa")
+        }
+    }, [auth, navigate, twoFactor]);
     
     useEffect(() => {
         if (mensaje) {

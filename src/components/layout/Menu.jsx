@@ -4,19 +4,24 @@ import GestionarLlaves from '../roles/Encargado/GestionarLlaves';
 import MenuButton from '../common/MenuButton';
 import PropTypes from 'prop-types';
 import { cerrarSesion } from '../../api/auth';
+import { useNavigate } from 'react-router-dom';
 
 const Menu = ({
   rol = "",
   mostrarOcultarMenu
 }) => {
-    console.log(rol)
     const [ cambiarPassword, setCambiarPassword ] = useState(false);
     const [ gestionLlaves, setGestionLlaves ] = useState(false);
-
-
+    const navigate = useNavigate();
     const handleCambiarPassword = () => {
         setCambiarPassword(true);
     }
+    const handleAgregar2FA = () => {
+        //cambiar a otra pagina
+        navigate("/ajustes/config2fa");
+
+    }
+
     const handleLogout = async () => {
       try{
         await cerrarSesion();
@@ -40,6 +45,8 @@ const Menu = ({
             
             {/* Cambiar password */}
             <MenuButton onClick={handleCambiarPassword}>Cambiar contraseña </MenuButton>
+            {/* Agregar 2FA */}
+            <MenuButton onClick={handleAgregar2FA}>Autenticación de dos factores</MenuButton>
 
             {/* Opciones para los encargados */}
             {rol.toLowerCase() == "encargado" &&
@@ -56,6 +63,7 @@ const Menu = ({
         
          {cambiarPassword && <CambiarPassword handleCloseModal={handleCloseModal} />}
          {gestionLlaves && <GestionarLlaves />}
+
       </>
       )
     }

@@ -6,6 +6,9 @@ import { AuthProvider } from './context/AuthProvider';
 import AccesoDenegado from './pages/AccesoDenegado';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { BusquedaProvider } from './context/BusquedaProvider';
+import DobleFactorAhutenticacion from './pages/Account/DobleFactorAhutenticacion';
+import DobleFactorConfirmacion from './pages/Account/DobleFactorConfirmacion';
+import DobleFactorDeshabilitar from './pages/Account/DobleFactorDeshabilitar';
 
 // Layouts
 const AuthLayout = lazy(() => import('./layouts/AuthLayout'));
@@ -29,9 +32,24 @@ function App() {
             <Routes>
               {/* Rutas públicas */}
               <Route path='acceso-denegado' element={<AccesoDenegado />}/>
+              <Route path="*" element={<NotFound />} />{/* Paginas no encontradas */}
 
-              <Route path='/' element={<AuthLayout />}>
+              <Route path='/' element={<AuthLayout />}> {/* login */}
                 <Route index element={<Login />} />
+              </Route>
+
+              {/* Rutas protegidas  ajustes generales */}
+              <Route path='/ajustes' element={<RutaProtegida roles="Estudiante,Admin,Encargado"/>}>
+                <Route path='config2fa' element={<DobleFactorAhutenticacion />} />
+                <Route path='config2fa/deshabilitar' element={<DobleFactorDeshabilitar />} />
+
+{/*                 <Route path="*" element={<NotFound />} /> */}
+              </Route>
+
+              {/* Rutas protegidas, validaciones */}
+              <Route path='/app' element={<RutaProtegida roles="Estudiante,Admin,Encargado"/>}>
+                <Route path='2fa' element={<DobleFactorConfirmacion />} />
+{/*                 <Route path="*" element={<NotFound />} /> */}
               </Route>
 
               {/* Rutas para estudiantes */}
@@ -53,7 +71,6 @@ function App() {
 
               </Route>
 
-              <Route path="*" element={<NotFound />} />{/* Paginas no encontradas */}
 
             </Routes>
           </BusquedaProvider>
