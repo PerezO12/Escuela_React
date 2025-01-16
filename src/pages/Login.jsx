@@ -28,12 +28,10 @@ const Login = () => {
             //todo: mejorar esto
             localStorage.setItem('token', data.token);
             data.roles = data.roles.$values;
-            console.log(data)
             data.rol = data.roles[0]
             setAuth(data);
             setTwoFactor(data.twoFactorEnabled)
         } catch (error) {
-            console.log(error)
             setMensaje( errorMapper(error)?.values);
         }
     }, [userName, setAuth, password]);

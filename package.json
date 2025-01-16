@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.64.1",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "escuela-react": "file:",

@@ -6,9 +6,10 @@ import { AuthProvider } from './context/AuthProvider';
 import AccesoDenegado from './pages/AccesoDenegado';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { BusquedaProvider } from './context/BusquedaProvider';
-import DobleFactorAhutenticacion from './pages/Account/DobleFactorAhutenticacion';
+import DobleFactorAutenticacion from './pages/Account/DobleFactorAutenticacion';
 import DobleFactorConfirmacion from './pages/Account/DobleFactorConfirmacion';
 import DobleFactorDeshabilitar from './pages/Account/DobleFactorDeshabilitar';
+import CambiarPassword from './pages/Account/CambiarPassword';
 
 // Layouts
 const AuthLayout = lazy(() => import('./layouts/AuthLayout'));
@@ -40,10 +41,9 @@ function App() {
 
               {/* Rutas protegidas  ajustes generales */}
               <Route path='/ajustes' element={<RutaProtegida roles="Estudiante,Admin,Encargado"/>}>
-                <Route path='config2fa' element={<DobleFactorAhutenticacion />} />
+                <Route path='password' element={<CambiarPassword/>}/>
+                <Route path='config2fa' element={<DobleFactorAutenticacion />} />
                 <Route path='config2fa/deshabilitar' element={<DobleFactorDeshabilitar />} />
-
-{/*                 <Route path="*" element={<NotFound />} /> */}
               </Route>
 
               {/* Rutas protegidas, validaciones */}
