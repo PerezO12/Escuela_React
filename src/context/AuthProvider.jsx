@@ -28,6 +28,7 @@ const AuthProvider = ({children}) => {
                 data.roles = data.roles.$values;
                 data.rol = data.roles[0];//todo: esto es temporal hasta ver como manear si un solo rol o varios
                 setAuth(data);
+                //localStorage.setItem('token', data.token);//todo: qutiar esto luego de xponer seguridad
             } catch(error) {
                 setAuth({});
                 console.log(error);

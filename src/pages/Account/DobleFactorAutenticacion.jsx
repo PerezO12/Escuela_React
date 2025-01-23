@@ -47,6 +47,13 @@ const DobleFactorAutenticacion = () => {
     const handleVerificarCodigo = () => {
         enviarCodigo(verificationCode);
     };
+     /*borrar el mensahe automaticamente  */
+    useEffect(() => {
+        if (mensaje) {
+            const timer = setTimeout(() => setMensaje(""), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [mensaje, setMensaje]);
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">

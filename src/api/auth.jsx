@@ -5,6 +5,7 @@ export const login = async ( credenciales ) => {
         const { data } = await clienteAxios.post('/account/login', credenciales);
         return data.data;
     } catch (error) {
+        console.log(error);
         throw error.response?.data?.errors|| error.response?.data?.Errors || "Ocurrió un error al iniciar sesión. Por favor, inténtalo nuevamente.";
     }
 }
@@ -14,6 +15,7 @@ export const cargarDatosUsuario = async (config) => {
         const { data } = await clienteAxios.get('/account/obtener-perfil', config);
         return data.data;
     } catch(error) {
+        console.log(error);
         throw error.response?.data?.errors || error.response?.data?.Errors || "Ocurrió un error.";
     }
 }
